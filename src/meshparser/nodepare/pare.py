@@ -61,6 +61,7 @@ class NodePare(object):
         Return the pared node index for the original 
         node position.
         '''
+        return self._pointMap[node_index]
         
     def getParedPoints(self):
         return self._paredPoints

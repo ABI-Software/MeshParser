@@ -46,7 +46,6 @@ class VRMLParser(object):
                 current_line = lines.pop(0)
                 line_elements = current_line.strip().split(' ')
                 while len(line_elements):
-#                     print(parsings, line_elements)
                     parsings += 1
                     line_elements = state.parse(line_elements)
                     state = state.activeState()
@@ -54,7 +53,8 @@ class VRMLParser(object):
         self._data = state.getData()
         if 'Transform' in self._data and self._data['Transform'] and len(self._data['Transform']) and 'Shape' in self._data['Transform'][0] and 'IndexedFaceSet' in self._data['Transform'][0]['Shape']:
             self._points = self._data['Transform'][0]['Shape']['IndexedFaceSet']['Coordinate']['point']
-            self._elements = self._data['Transform'][0]['Shape']['IndexedFaceSet']['coordIndex']
+            element_list = self._data['Transform'][0]['Shape']['IndexedFaceSet']['coordIndex']
+            self._elements = _convertToElementList(element_list)
 
     def getPoints(self):
         return self._points
@@ -425,4 +425,22 @@ def _checkHeader(header):
         return True
     
     return False
-        
+
+
+def _convertToElementList(elements_list):
+    """
+    Take a list of element node indexes deliminated by -1 and convert
+    it into a list element node indexes list.
+    """
+    elements = []
+    current_element = []
+    for node_index in elements_list:
+        if node_index == -1:
+            elements.append(current_element)
+            current_element = []
+        else:
+            current_element.append(node_index)
+
+    return elements
+
+

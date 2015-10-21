@@ -1,0 +1,79 @@
+solid ascii
+ facet normal 0.774717 0.33314 0.53743
+  outer loop
+   vertex -10.4498 31.1871 1161.39
+   vertex -9.26793 26.6263 1162.51
+   vertex -8.96271 27.5622 1161.49
+  endloop
+ endfacet
+ facet normal 0.777103 0.332938 0.534101
+  outer loop
+   vertex -10.4498 31.1871 1161.39
+   vertex -10.7776 29.8503 1162.7
+   vertex -9.26793 26.6263 1162.51
+  endloop
+ endfacet
+ facet normal 0.733648 0.308455 0.605489
+  outer loop
+   vertex -10.7776 29.8503 1162.7
+   vertex -9.7928 25.6393 1163.65
+   vertex -9.26793 26.6263 1162.51
+  endloop
+ endfacet
+ facet normal 0.737235 0.308321 0.601185
+  outer loop
+   vertex -10.7776 29.8503 1162.7
+   vertex -11.2968 28.4809 1164.04
+   vertex -9.7928 25.6393 1163.65
+  endloop
+ endfacet
+ facet normal 0.698595 0.280072 0.658426
+  outer loop
+   vertex -11.2968 28.4809 1164.04
+   vertex -10.4743 24.635 1164.8
+   vertex -9.7928 25.6393 1163.65
+  endloop
+ endfacet
+ facet normal 0.696518 0.280064 0.660626
+  outer loop
+   vertex -11.2968 28.4809 1164.04
+   vertex -11.9597 27.1357 1165.3
+   vertex -10.4743 24.635 1164.8
+  endloop
+ endfacet
+ facet normal 0.65675 0.245865 0.712902
+  outer loop
+   vertex -11.9597 27.1357 1165.3
+   vertex -11.2493 23.6471 1165.85
+   vertex -10.4743 24.635 1164.8
+  endloop
+ endfacet
+ facet normal 0.643487 0.245091 0.725158
+  outer loop
+   vertex -11.9597 27.1357 1165.3
+   vertex -12.7182 25.8716 1166.4
+   vertex -11.2493 23.6471 1165.85
+  endloop
+ endfacet
+ facet normal 0.593651 0.198626 0.779824
+  outer loop
+   vertex -12.7182 25.8716 1166.4
+   vertex -12.0549 22.7096 1166.7
+   vertex -11.2493 23.6471 1165.85
+  endloop
+ endfacet
+ facet normal 0.560377 0.194055 0.805184
+  outer loop
+   vertex -12.7182 25.8716 1166.4
+   vertex -13.5244 24.7453 1167.24
+   vertex -12.0549 22.7096 1166.7
+  endloop
+ endfacet
+ facet normal 0.479197 0.118602 0.869657
+  outer loop
+   vertex -13.5244 24.7453 1167.24
+   vertex -12.828 21.8561 1167.25
+   vertex -12.0549 22.7096 1166.7
+  endloop
+ endfacet
+endsolid

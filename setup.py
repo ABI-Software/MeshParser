@@ -7,7 +7,7 @@ ready for consumption by other libraries.
 """
 
 setup(name=u'meshparser',
-      version='0.2.0',
+      version='0.3.0',
       description='A Small Python library for parsing files that describe a mesh.',
       long_description=long_description,
       classifiers=[],
@@ -15,7 +15,7 @@ setup(name=u'meshparser',
       author_email='',
       url='https://github.com/ABI-Software/MeshParser',
       license='Apache',
-      packages=find_packages(exclude=['tests', 'tests.*', ]),
+      packages=find_packages('src', exclude=['tests', 'tests.*', ]),
       package_dir={'': 'src'},
       zip_safe=True,
       install_requires=dependencies,

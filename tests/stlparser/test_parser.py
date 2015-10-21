@@ -21,7 +21,7 @@ class ParserTestCase(unittest.TestCase):
         v = STLParser()
         v.parse('data/ship.zip')        
 
-        self.assertEqual(828, len(v.getElements())) 
+        self.assertEqual(828, len(v.getElements()))
 
     def testParse3(self):
         v = STLParser()

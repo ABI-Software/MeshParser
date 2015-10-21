@@ -117,15 +117,15 @@ class STLParser(object):
             end_byte = start_byte + 50
             element_info = struct.unpack('ffffffffffffH', data[start_byte:end_byte])
             pt1 = [element_info[3], element_info[4], element_info[5]]
-            self._points.append(pt1)
             pt1_index = len(self._points)
+            self._points.append(pt1)
             pt2 = [element_info[6], element_info[7], element_info[8]]
-            self._points.append(pt2)
             pt2_index = len(self._points)
+            self._points.append(pt2)
             pt3 = [element_info[9], element_info[10], element_info[11]]
-            self._points.append(pt3)
             pt3_index = len(self._points)
-            
+            self._points.append(pt3)
+
             self._elements.append([pt1_index, pt2_index, pt3_index])
 
 

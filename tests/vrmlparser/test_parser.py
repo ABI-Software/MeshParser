@@ -5,7 +5,8 @@ Created on Jun 18, 2015
 '''
 import unittest
 
-from numptyparser.vrmlparser.parser import VRMLParser
+from meshparser.vrmlparser.parser import VRMLParser
+from meshparser.nodepare.pare import NodePare
 
 
 class ParserTestCase(unittest.TestCase):
@@ -17,9 +18,7 @@ class ParserTestCase(unittest.TestCase):
         
     def testParse1(self):
         v = VRMLParser()
-        v.parse('data/Horse_1_1.wrl')
-        
-        
+        v.parse('data/Horse_1_1.wrl') 
 
     def testParse2(self):
         v = VRMLParser()
@@ -32,6 +31,15 @@ class ParserTestCase(unittest.TestCase):
         
         self.assertEqual(4572, len(v.getPoints()))
         self.assertEqual(36480, len(v.getElements()))
+        
+    def testDuplicatedPoints(self):
+        v = VRMLParser()
+        v.parse('data/Horse_1_4.wrl')
+        self.assertEqual(33, len(v.getPoints()))
+        np = NodePare()
+        np.addPoints(v.getPoints())
+        np.parePoints()
+        self.assertEqual(23, len(np.getParedPoints()))
         
 
 

@@ -61,7 +61,8 @@ class VRMLParser(object):
     
     def getElements(self):
         return self._elements
-    
+
+
 class _BaseState(object):
     
     def __init__(self, parent=None):

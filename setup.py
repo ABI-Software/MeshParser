@@ -7,7 +7,7 @@ ready for consumption by other libraries.
 """
 
 setup(name=u'meshparser',
-      version='0.3.0',
+      version='0.3.1',
       description='A Small Python library for parsing files that describe a mesh.',
       long_description=long_description,
       classifiers=[],

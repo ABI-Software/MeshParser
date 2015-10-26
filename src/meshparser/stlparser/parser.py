@@ -19,11 +19,15 @@ class STLParser(object):
         '''
         Constructor
         '''
+        self._clear()
+
+    def _clear(self):
         self._points = []
         self._elements = []
         
     def parse(self, filename):
-        
+
+        self._clear()
         if is_zipfile(filename):
             with ZipFile(filename) as stlzip:
                 zipinfolist = stlzip.infolist()

@@ -20,9 +20,6 @@ class SIGNALS(object):
     
     
 class VRMLParser(BaseParser):
-    '''
-    classdocs
-    '''
 
     def __init__(self):
         '''
@@ -31,7 +28,16 @@ class VRMLParser(BaseParser):
         super(VRMLParser, self).__init__()
         self._data = {}
         self._state = _RootState()
-           
+
+    def canParse(self, filename):
+        parseable = False
+        with open(filename) as f:
+            lines = f.readlines()
+            header_line = lines.pop(0)
+            parseable = _checkHeader(header_line)
+
+        return parseable
+
     def parse(self, filename):
         self._clear()
         state = _RootState()

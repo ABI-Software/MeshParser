@@ -2,10 +2,6 @@ from meshparser.nodepare.pare import NodePare
 
 
 class BaseParser(object):
-    '''
-    classdocs
-    '''
-
 
     def __init__(self):
         '''
@@ -16,6 +12,14 @@ class BaseParser(object):
     def _clear(self):
         self._points = []
         self._elements = []
+
+    def canParse(self, filename):
+        """
+        Tries to determine whether this parser can parse the given filename.  May return false negatives!
+        :param filename: The filename of the file to parse.
+        :return: True is this parser can pass the given filename, otherwise False.
+        """
+        return False
 
     def parse(self, filename):
         raise NotImplementedError('Method "parse" not implemented')

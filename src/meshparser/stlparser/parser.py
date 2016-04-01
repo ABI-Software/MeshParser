@@ -22,6 +22,23 @@ class STLParser(BaseParser):
         '''
         super(STLParser, self).__init__()
 
+    def canParse(self, filename):
+        parseable = False
+        if is_zipfile(filename):
+            with ZipFile(filename) as stlzip:
+                zipinfolist = stlzip.infolist()
+                if len(zipinfolist) != 1:
+                    print('More than one file in archive ... exiting')
+                    return
+                zipinfo = zipinfolist[0]
+                data = stlzip.read(zipinfo.filename)
+                if 'solid' in data[:80].decode("utf-8"):
+                    parseable = True
+        else:
+            parseable = _is_ascii_stl(filename)
+
+        return parseable
+
     def parse(self, filename):
         self._clear()
         if is_zipfile(filename):

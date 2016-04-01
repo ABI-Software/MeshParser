@@ -12,6 +12,19 @@ class VTKParser(BaseParser):
         '''
         super(VTKParser, self).__init__()
 
+    def canParse(self, filename):
+        parseable = False
+        state = _HeaderState(self)
+        with open(filename) as f:
+            lines = f.readlines()
+            header_line = lines.pop(0)
+            try:
+                parseable = state.parse(header_line)
+            except SyntaxError:
+                parseable = False
+
+        return parseable
+
     def parse(self, filename):
         self._clear()
 

@@ -3,6 +3,7 @@ Created on Jun 18, 2015
 
 @author: hsorby
 '''
+from meshparser.base.parser import BaseParser
 
 keywords = ['Transform']
 
@@ -18,7 +19,7 @@ class SIGNALS(object):
     CHILD = 2
     
     
-class VRMLParser(object):
+class VRMLParser(BaseParser):
     '''
     classdocs
     '''
@@ -27,12 +28,12 @@ class VRMLParser(object):
         '''
         Constructor
         '''
-        self._points = []
-        self._elements = []
+        super(VRMLParser, self).__init__()
         self._data = {}
         self._state = _RootState()
            
     def parse(self, filename):
+        self._clear()
         state = _RootState()
         with open(filename) as f:
             lines = f.readlines()
@@ -55,12 +56,6 @@ class VRMLParser(object):
             self._points = self._data['Transform'][0]['Shape']['IndexedFaceSet']['Coordinate']['point']
             element_list = self._data['Transform'][0]['Shape']['IndexedFaceSet']['coordIndex']
             self._elements = _convertToElementList(element_list)
-
-    def getPoints(self):
-        return self._points
-    
-    def getElements(self):
-        return self._elements
 
 
 class _BaseState(object):

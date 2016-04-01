@@ -10,6 +10,7 @@ from meshparser.nodepare.pare import NodePare
 
 
 class ParserTestCase(unittest.TestCase):
+
     def testExistence(self):
         v = VRMLParser()
         self.assertRaises(IOError, v.parse, 'file that doesnt exist')

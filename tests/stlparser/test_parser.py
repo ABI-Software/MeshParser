@@ -6,7 +6,6 @@ from meshparser.nodepare.pare import NodePare
 
 class ParserTestCase(unittest.TestCase):
 
-
     def testExistence(self):
         v = STLParser()
         self.assertRaises(IOError, v.parse, 'file that doesnt exist')
@@ -49,21 +48,21 @@ class ParserTestCase(unittest.TestCase):
         v.parse('data/pelvis_minimal.stl')
         self.assertEqual(33, len(v.getPoints()))
         elements = v.getElements(zero_based=False)
-        self.assertItemsEqual([4, 5, 6], elements[1])
+        self.assertEquals([4, 5, 6], elements[1])
 
     def testPared(self):
         v = STLParser()
         v.parse('data/pelvis_minimal.stl')
         self.assertEqual(13, len(v.getPoints(pared=True)))
         elements = v.getElements(pared=True)
-        self.assertItemsEqual([0, 3, 1], elements[1])
+        self.assertEquals([0, 3, 1], elements[1])
 
     def testParedZeroBased(self):
         v = STLParser()
         v.parse('data/pelvis_minimal.stl')
         self.assertEqual(33, len(v.getPoints()))
         elements = v.getElements(zero_based=False, pared=True)
-        self.assertItemsEqual([1, 4, 2], elements[1])
+        self.assertEquals([1, 4, 2], elements[1])
 
 
 if __name__ == "__main__":

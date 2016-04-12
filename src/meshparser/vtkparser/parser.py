@@ -19,7 +19,7 @@ class VTKParser(BaseParser):
             lines = f.readlines()
             header_line = lines.pop(0)
             try:
-                parseable = state.parse(header_line)
+                parseable = state.parse(header_line.rstrip())
             except SyntaxError:
                 parseable = False
 

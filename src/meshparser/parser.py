@@ -8,7 +8,6 @@ class MeshParser(object):
     def __init__(self):
         self._parser = None
 
-
     def parse(self, filename, use_parser=None):
         if use_parser is None:
             # Try and determine which parser to use.
@@ -18,12 +17,18 @@ class MeshParser(object):
             if filename.endswith('.vtk'):
                 if vtk_parser.canParse(filename):
                     self._parser = vtk_parser
+                else:
+                    raise TypeError('Could not parse mesh as vtk mesh: {0}'.format(filename))
             elif filename.endswith('.stl'):
                 if stl_parser.canParse(filename):
                     self._parser = stl_parser
+                else:
+                    raise TypeError('Could not parse mesh as stl mesh: {0}'.format(filename))
             elif filename.endswith('.wrl'):
                 if vrml_parser.canParse(filename):
                     self._parser = vrml_parser
+                else:
+                    raise TypeError('Could not parse mesh as vrml mesh: {0}'.format(filename))
             else:
                 if vtk_parser.canParse(filename):
                     self._parser = vtk_parser

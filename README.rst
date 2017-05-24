@@ -18,7 +18,7 @@ Usage
 
   from meshparser import parser
 
-  # It has smoe tests to determine the file format, if this files you can set the format to use manually using a second argument.
+  # It has some tests to determine the file format, if this files you can set the format to use manually using a second argument.
   p = parser('file/to/load')
   # getPoints has an option to get the pared down points, i.e. all repeated points will be removed.
   n = p.getPoints()

@@ -7,9 +7,9 @@ A Python library for parsing different mesh formats in to a list of points and a
 
 Currently this library supports reading of the following formats:
 
- - stl
- - vrml
- - vtk
+  - stl
+  - vrml
+  - vtk
 
 Usage
 =====

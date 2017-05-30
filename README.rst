@@ -16,10 +16,10 @@ Usage
 
 ::
 
-  from meshparser import parser
+  from meshparser.parser import MeshParser
 
   # It has some tests to determine the file format, if this fails you can set the format to use manually using a second argument 'use_parser'.  The 'use_parser' parameter must have one of the values from {'vtk', 'stl', 'vrml'}.
-  p = parser('file/to/load')
+  p = MeshParser('file/to/load')
   # getPoints has an option to get the pared down points, i.e. all repeated points will be removed.
   n = p.getPoints()
   # getElements has two options, zero_based: returns point indexes that are zero based [false], pared: remove repeated points [false]

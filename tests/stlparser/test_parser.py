@@ -64,6 +64,13 @@ class ParserTestCase(unittest.TestCase):
         elements = v.getElements(zero_based=False, pared=True)
         self.assertEquals([1, 4, 2], elements[1])
 
+    def testFailingModelInVersion000400(self):
+        v = STLParser()
+        v.parse('data/amazing_alveoli_minimal.stl')
+        self.assertEqual(310188, len(v.getPoints()))
+        elements = v.getElements(zero_based=False, pared=True)
+        self.assertEquals([4, 1, 3], elements[1])
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

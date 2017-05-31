@@ -73,10 +73,13 @@ class STLParser(BaseParser):
             elif line.startswith('endfacet'):
                 self._elements.append(node_indexes)
             elif line.startswith('vertex'):
-                components = line.split(' ')
-                pt = [float(components[1]), float(components[2]), float(components[3])]
-                node_indexes.append(len(self._points))
-                self._points.append(pt)
+                components = [v for v in line.split(' ') if v]
+                if len(components) == 4:
+                    pt = [float(components[1]), float(components[2]), float(components[3])]
+                    node_indexes.append(len(self._points))
+                    self._points.append(pt)
+                else:
+                    raise(Execption('Invalid vertex specified.'))
 
     def _parseBinary(self, data):
         start_byte = 0
@@ -109,7 +112,7 @@ def _is_ascii_stl(filename):
     is_ascii = False
     with open(filename, 'rb') as f:
         first_bytes = f.read(80)
-        if 'solid' in first_bytes.decode("utf-8"):
+        if 'solid' in first_bytes.decode("utf-8").lower():
             is_ascii = True
 
     return is_ascii

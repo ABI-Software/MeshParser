@@ -1,7 +1,10 @@
 
-===========
-Mesh Parser
-===========
+.. |build_badge| image:: https://travis-ci.org/ABI-Software/MeshParser.svg?branch=master
+    :target: https://travis-ci.org/ABI-Software/MeshParser
+
+=========================
+Mesh Parser |build_badge|
+=========================
 
 A Python library for parsing different mesh formats in to a list of points and a list of elements.  The element's nodes are identified by indexes into the point list array. 
 

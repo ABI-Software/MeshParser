@@ -11,6 +11,13 @@ Currently this library supports reading of the following formats:
 - vrml
 - vtk
 
+Install
+=======
+
+::
+
+  pip install git+https://github.com/ABI-Software/MeshParser.git
+
 Usage
 =====
 

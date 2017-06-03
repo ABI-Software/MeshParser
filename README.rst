@@ -7,7 +7,9 @@ Mesh Parser |build_badge|
 =========================
 
 A Python library for parsing different mesh formats in to a list of points and a list of elements.  The element's 
-nodes are identified by indexes into the point list array. 
+nodes are identified by indexes into the point list array.
+
+This project uses _`semantic versioning <http://semver.org/>` when versioning the software.
 
 Currently this library supports reading of the following formats:
 

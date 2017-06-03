@@ -4,5 +4,8 @@ python:
   - "3.5"
   - "3.6"
   - "nightly"
+install:
+  - pip install nose coverage
+  - python setup.py develop
 script:
-  - pytest
+  - nosetests --with-coverage --cover-package=meshparser

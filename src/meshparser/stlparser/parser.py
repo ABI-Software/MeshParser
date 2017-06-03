@@ -1,8 +1,3 @@
-'''
-Created on Oct 21, 2015
-
-@author: hsorby
-'''
 from zipfile import ZipFile, is_zipfile
 
 import struct
@@ -11,15 +6,9 @@ from meshparser.base.parser import BaseParser
 
 
 class STLParser(BaseParser):
-    '''
-    classdocs
-    '''
 
 
     def __init__(self):
-        '''
-        Constructor
-        '''
         super(STLParser, self).__init__()
 
     def canParse(self, filename):

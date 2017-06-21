@@ -1,36 +1,14 @@
-'''
-Created on Jun 18, 2015
-
-@author: hsorby
-'''
 from meshparser.base.parser import BaseParser
+from meshparser.exceptions import ParseError
 
-keywords = ['Transform']
-
-class MODES(object):
-    
-    KEYWORD = 1
-    LABEL = 2
-    
-    
-class SIGNALS(object):
-    
-    COMPLETE = 1
-    CHILD = 2
-    
     
 class VRMLParser(BaseParser):
 
     def __init__(self):
-        '''
-        Constructor
-        '''
         super(VRMLParser, self).__init__()
         self._data = {}
-        self._state = _RootState()
 
     def canParse(self, filename):
-        parseable = False
         with open(filename) as f:
             lines = f.readlines()
             header_line = lines.pop(0)
@@ -40,388 +18,540 @@ class VRMLParser(BaseParser):
 
     def parse(self, filename):
         self._clear()
-        state = _RootState()
+        scene = _VRMLScene()
         with open(filename) as f:
             lines = f.readlines()
             header_line = lines.pop(0)
             if not _checkHeader(header_line):
-                print('Error: Header check failed')
-                return
-            
-            parsings = 0
-            while lines and state is not None:
+                raise ParseError('Header check failed')
+
+            while lines:
                 current_line = lines.pop(0)
-                line_elements = current_line.strip().split(' ')
+                current_line = _remove_comment(current_line)
+                line_elements = current_line.strip().split()
                 while len(line_elements):
-                    parsings += 1
-                    line_elements = state.parse(line_elements)
-                    state = state.activeState()
-                    
-        self._data = state.getData()
-        if 'Transform' in self._data and self._data['Transform'] and len(self._data['Transform']) and 'Shape' in self._data['Transform'][0] and 'IndexedFaceSet' in self._data['Transform'][0]['Shape']:
-            self._points = self._data['Transform'][0]['Shape']['IndexedFaceSet']['Coordinate']['point']
-            element_list = self._data['Transform'][0]['Shape']['IndexedFaceSet']['coordIndex']
-            self._elements = _convertToElementList(element_list)
+                    scene.parse(line_elements)
+
+        self._data = scene.getRoot()
+
+        self._points = self._extractPoints()
+        self._elements = self._extractElements()
+
+    def _getIndexedFaceSet(self):
+        indexed_face_set = None
+        if 'Transform' in self._data and 'children' in self._data['Transform']:
+            if isinstance(self._data['Transform']['children'], list):
+                shapes = self._data['Transform']['children']
+                if len(shapes) > 1:
+                    ParseError('Allow for more than two shapes in a single Transform.')
+
+                shape = shapes[0]
+                if 'Shape' in shape and 'geometry' in shape['Shape'] and 'IndexedFaceSet' in shape['Shape']['geometry']:
+                    indexed_face_set = shape['Shape']['geometry']['IndexedFaceSet']
+
+        return indexed_face_set
+
+    def _extractPoints(self):
+        points = []
+        indexed_face_set = self._getIndexedFaceSet()
+        if indexed_face_set is not None and 'coord' in indexed_face_set and 'Coordinate' in indexed_face_set['coord']:
+            coordinates = indexed_face_set['coord']['Coordinate']
+            if 'point' in coordinates:
+                points = coordinates['point']
+
+        return points
+
+    def _extractElements(self):
+        elements = []
+        indexed_face_set = self._getIndexedFaceSet()
+        if indexed_face_set is not None and 'coordIndex' in indexed_face_set:
+            coordinate_indexes = indexed_face_set['coordIndex']
+            elements = _convertToElementList(coordinate_indexes)
+
+        return elements
+
+        # if 'Transform' in self._data and self._data['Transform'] and len(self._data['Transform']) and \
+        #         'Shape' in self._data['Transform'][0] and \
+        #         'IndexedFaceSet' in self._data['Transform'][0]['Shape']:
+        #     self._points = self._data['Transform'][0]['Shape']['IndexedFaceSet']['Coordinate']['point']
+        #     element_list = self._data['Transform'][0]['Shape']['IndexedFaceSet']['coordIndex']
+        #     self._elements = _convertToElementList(element_list)
 
 
-class _BaseState(object):
-    
-    def __init__(self, parent=None):
-        self._parent = parent
-        self._complete = False
-        self._active_state = self
-        self._data = None
+def _remove_comment(line):
+    """
+    Removes any comments from a line.  A comment starts from a # symbol
+    to the end of the line.  But don't remove from # symbol that are embedded
+    in strings.
+    """
+    # First find just quotes and their indexes.
+    quote_indexes = []
+    hash_indexes = []
+    for i, ch in enumerate(line):
+        if ch == '"':
+            quote_indexes.append(i)
+            if i > 0 and line[i - 1] == "\\":
+                quote_indexes.pop()
+        elif ch == '#':
+            hash_indexes.append(i)
+
+    comment_marker_index = -1
+    for hash_index in hash_indexes:
+        quote_index_ranges = [quote_indexes[i:i + 2] for i in range(0, len(quote_indexes), 2)]
+        if not _check_index_within_index_pairs(hash_index, quote_index_ranges):
+            comment_marker_index = hash_index
+            break
+
+    if comment_marker_index >= 0:
+        line = line[:comment_marker_index]
+    return line
+
+
+def _check_index_within_index_pairs(index, index_ranges):
+    """
+    Check that the index 'index' lies within the set of indexes.
+    :param index: Index to determine whether it falls within the range or index pairs.
+    :param index_ranges: A list of index pairs, monotonically increasing pairs.
+    :return: True if the given index lies within a range specified by an index pair, False otherwise.
+    """
+    in_range = False
+    for index_range in index_ranges:
+        if index_range[0] < index < index_range[1]:
+            in_range = True
+    return in_range
+
+
+class _VRMLScene(object):
+    """
+    Scene information object.
+    """
+    def __init__(self):
+        self._root = {}
+        self._state = None
         self._key = None
-        self._label = None
-        self._mode = None
-        
-    def isComplete(self):
-        return self._complete
-    
-    def isActive(self):
-        return self._active_state is not None
+
+    def getRoot(self):
+        return self._root
 
     def parse(self, line_elements):
-        raise NotImplementedError()
-    
-    def activeState(self):
-        return self._active_state
-    
-    def getKey(self):
-        return self._key
-    
+        # If no state is set then we are looking for a node.
+        if self._state is None:
+            element = line_elements.pop(0)
+            if _is_node(element):
+                self._state = _get_VRML_node(element)
+                self._key = element
+                self._root[element] = {}
+            else:
+                raise ParseError('Unknown node: "{0}" where node expected.'.format(element))
+        else:
+            self._state.parse(line_elements)
+            if self._state.isFinished():
+                self._root[self._key] = self._state.getData()
+                self._state = None
+
+
+class _BaseParse(object):
+    """
+    Base object for all parseable classes.
+    """
+    def __init__(self):
+        self._finished = False
+        self._data = None
+
+    def isFinished(self):
+        return self._finished
+
+    def setFinished(self, state=True):
+        self._finished = state
+
     def getData(self):
         return self._data
-    
-    def setData(self, data):
-        if isinstance(self._data, dict):
-            self._data[self._key] = data
-        else:
+
+
+class _BaseMultiAble(_BaseParse):
+    """
+    Base class for classes that are able to parse multiple or single items.
+    """
+    def __init__(self):
+        super(_BaseMultiAble, self).__init__()
+        self._multi = False
+        self._open_marker = '['
+        self._close_marker = ']'
+
+    def setMulti(self, state=True):
+        self._multi = state
+
+    def isMulti(self):
+        return self._multi
+
+    def isOpenMarker(self, marker):
+        return marker == self._open_marker
+
+    def isCloseMarker(self, marker):
+        return marker == self._close_marker
+
+    def addData(self, data):
+        if self._multi:
             self._data.append(data)
+        else:
+            self._data = data
 
 
-class _RootState(_BaseState):
-    
-    def parse(self, line_elements):
-        if line_elements:
-            element = line_elements.pop(0)
-            if element == 'Transform':
-                self._key = 'Transform'
-            elif _isOpenScopeMarker(element):
-                self._data = _getTypeForMarker(element)
-                self._active_state = _TransformState(self)
-            elif _isCloseScopeMarker(element):
-                data = self._active_state.getData()
-                self._data[self._key] = data
-                self._active_state = None
-                
-        return line_elements
-    
-    def getData(self):
-        if self._active_state != self:
-            data = self._active_state.getData()
-            self._data[self._key] = data
-            return self._data
-    
+class _FNode(_BaseMultiAble):
+    """
+    Parses a node, or a multi node array.
+    """
+    def __init__(self):
+        super(_FNode, self).__init__()
+        self._active_key = None
+        self._active_state = None
 
-class _TransformState(_BaseState):
-    
-    def parse(self, line_elements):
-        if line_elements:
-            element = line_elements.pop(0)
-            if element == 'children':
-                self._key = 'children'
-            elif _isOpenScopeMarker(element):
-                self._data = _getTypeForMarker(element)
-                self._active_state = _ChildState(self)
-            elif _isCloseScopeMarker(element):
-                self._data.append(self._active_state.getData())
-                self._active_state = self._parent
-        
-        return line_elements
-
-
-class _ChildState(_BaseState):
-    
-    def parse(self, line_elements):
-        if line_elements:
-            element = line_elements.pop(0)
-            if element in ['Shape']:
-                self._key = element
-                self._mode = element
-            elif _isOpenScopeMarker(element):
-                self._data = _getTypeForMarker(element)
-                self._active_state = _ShapeState(self)
-            elif _isCloseScopeMarker(element):
-                if self._key is not None:
-                    self._data[self._key] = self._active_state.getData()
-                self._active_state = self._parent
-            
-        return line_elements
-
-
-class _ShapeState(_BaseState):
-    
-    def parse(self, line_elements):
-        if line_elements:
-            if self._data is None:
-                self._data = {}
-                
-            element = line_elements.pop(0)
-            if element in ['IndexedFaceSet', 'Appearance']:
-                self._active_state = self
-                self._key = element
-                if self._previous_element:
-                    self._label = self._previous_element
-            elif _isOpenScopeMarker(element):
-                self._data[self._key] = _getTypeForMarker(element)
-                if self._label is not None:
-                    self._data[self._key]['label'] = self._label
-                self._active_state = _getStateForNode(self._key, self)
-            elif _isCloseScopeMarker(element):
-                self._parent.setData(self._data)
-                self._active_state = self._parent
-            elif element:
-                self._active_state = self
-                self._previous_element = element
-                
-        return line_elements
-
-
-class _AppearanceState(_BaseState):
-    
-    def parse(self, line_elements):
-        if line_elements:
-            if self._data is None:
-                self._data = {}
-
-            element = line_elements.pop(0)
-            if element == 'material':
-                self._label = 'material'
-            elif element == 'Material':
-                self._key = element
-            elif _isOpenScopeMarker(element):
-                self._data[self._key] = _getTypeForMarker(element)
-                if self._label is not None:
-                    self._data[self._key]['label'] = self._label
-                self._active_state = _getStateForNode(self._key, self)
-            elif _isCloseScopeMarker(element):
-                self._parent.setData(self._data)
-                self._active_state = self._parent
-                
-        return line_elements
-
-
-class _IndexedFaceSetState(_BaseState):
-    
-    def parse(self, line_elements):
-        if line_elements:
-            if self._data is None:
-                self._data = {}
-
-            element = line_elements.pop(0)
-            if element in ['Coordinate', 'Normal', 'coordIndex']:
-                self._active_state = self
-                self._key = element
-                if self._previous_element:
-                    self._label = self._previous_element
-                    self._previous_element = None
-            elif _isOpenScopeMarker(element):
-                self._data[self._key] = _getTypeForMarker(element)
-                if self._label is not None:
-                    self._data[self._key]['label'] = self._label
-                    self._label = None
-                self._active_state = _getStateForNode(self._key, self)
-            elif _isCloseScopeMarker(element):
-                self._parent.setData(self._data)
-                self._active_state = self._parent
-                self._key = None
-            elif element:
-                self._active_state = self
-                self._previous_element = element
-                
-        return line_elements
-
-
-class _ListValueState(_BaseState):
+    def clear(self):
+        self._active_key = None
+        self._active_state = None
 
     def parse(self, line_elements):
-        if line_elements:
-            if self._data is None:
-                self._data = {}
-                
-            element = line_elements.pop(0)
-            if element in ['point', 'vector']:
-                self._active_state = self
-                self._key = element
-            elif _isOpenScopeMarker(element):
-                self._data[self._key] = _getTypeForMarker(element)
-                if self._label is not None:
-                    self._data[self._key]['label'] = self._label
-                self._active_state = _getStateForNode(self._key, self)
-            elif _isCloseScopeMarker(element):
-                self._parent.setData(self._data)
-                self._active_state = self._parent
-                
-        return line_elements
-
-
-class _MaterialState(_BaseState):
-    
-    def parse(self, line_elements):
-        if line_elements:
-            if self._data is None:
-                self._data = {}
-                
-            element = line_elements.pop(0)
-            if element in ['ambientIntensity', 'diffuseColor', 'specularColor', 'emissiveColor', 'shininess', 'transparency']:
-                self._mode = element
-                self._data[element] = None
-            elif _isCloseScopeMarker(element):
-                self._parent.setData(self._data)
-                self._active_state = self._parent
-            elif element:
-                value = 0.0
-                try:
-                    value = float(element)
-                except ValueError:
-                    print('Error: Could not convert element "{0}" to a float'.format(element))
-                    return line_elements
-                if self._mode in ['diffuseColor', 'specularColor', 'emissiveColor']:
-                    if self._data[self._mode] is None:
-                        self._data[self._mode] = []
-                    self._data[self._mode].append(value)
+        while line_elements and not self.isFinished():
+            element = line_elements[0]
+            consume = True
+            if self.isOpenMarker(element):
+                self._data = []
+                self._multi = True
+            elif self._active_state is not None:
+                consume = False
+                self._active_state.parse(line_elements)
+                if self._active_state.isFinished():
+                    self.addData({self._active_key: self._active_state.getData()})
+                    self.clear()
+                    if not self._multi:
+                        self._finished = True
+            elif self.isCloseMarker(element):
+                self._finished = True
+            elif self._active_state is None:
+                if _is_node(element):
+                    self._active_key = element
+                    self._active_state = _get_VRML_node(element)
+                elif element == 'NULL':
+                    self._data = None
+                    self._finished = True
                 else:
-                    self._data[self._mode] = value
-                
-        return line_elements
+                    raise ParseError('Unknown node: "{0}" where node expected.'.format(element))
+
+            if consume:
+                line_elements.pop(0)
 
 
-class _ValueState(_BaseState):
-    
+class _BaseFloat(_BaseMultiAble):
+    """
+    Parses a set number of floats.
+    """
+    def __init__(self, float_count=3):
+        super(_BaseFloat, self).__init__()
+        self._float_count = float_count
+        self._current = []
+
     def parse(self, line_elements):
-        if line_elements:
+        while line_elements and not self.isFinished():
+            element = line_elements.pop(0)
             if self._data is None:
                 self._data = []
-            if self._mode is None:
-                self._mode = []
-                
-            element = line_elements.pop(0)
-            if _isCloseScopeMarker(element):
-                if self._mode:
-                    self._data.append(self._mode)
-                    self._mode = []
-                self._parent.setData(self._data)
-                self._active_state = self._parent
-            elif element:
-                triple_end = False
-                value = 0.0
-                try:
-                    if element.endswith(','):
-                        triple_end = True
-                        value = float(element[:-1])
-                    else:
-                        value = float(element)
-                except ValueError:
-                    print('Error: Could not convert element "{0}" to a float'.format(element))
-                    return line_elements
-                if triple_end:
-                    self._mode.append(value)
-                    self._data.append(self._mode)
-                    self._mode = []
-                else:
-                    self._mode.append(value)
-                
-        return line_elements
+
+            if self.isOpenMarker(element):
+                self._multi = True
+            elif self.isCloseMarker(element):
+                self._finished = True
+            else:
+                if element[-1] == ',':
+                    element = element[:-1]
+                self._current.append(float(element))
+                if len(self._current) == self._float_count:
+                    self.addData(self._current)
+                    self._current = []
+                    if not self._multi:
+                        self.setFinished()
 
 
-class _CoordIndexState(_BaseState):
-    
+class _BaseInt(_BaseMultiAble):
+    """
+    Parses a set number of floats.
+    """
+    def __init__(self):
+        super(_BaseInt, self).__init__()
+
     def parse(self, line_elements):
-        if line_elements:
+        while line_elements and not self.isFinished():
+            element = line_elements.pop(0)
             if self._data is None:
                 self._data = []
-                
-            element = line_elements.pop(0)
-            if _isCloseScopeMarker(element):
-                self._parent.setData(self._data)
-                self._active_state = self._parent
-            elif element:
-                value = -1
-                try:
-                    if element.endswith(','):
-                        value = int(element[:-1])
-                    else:
-                        value = int(element)
-                except ValueError:
-                    print('Error: Could not convert element "{0}" to a float'.format(element))
-                    return line_elements
 
-                self._data.append(value)
-                
-        return line_elements
+            if self.isOpenMarker(element):
+                self._multi = True
+            elif self.isCloseMarker(element):
+                self._finished = True
+            else:
+                if element[-1] == ',':
+                    element = element[:-1]
+
+                self.addData(int(element))
+                if not self._multi:
+                    self.setFinished()
 
 
-dummy_count = 0
-class _DummyState(_BaseState):
+class _FInt32(_BaseInt):
+    """
+    Parses single or a list of integers.
+    """
+
+class _FVec3f(_BaseFloat):
+    """
+    Parses three floats or a multi floats.
+    """
+    def __init__(self):
+        super(_FVec3f, self).__init__(3)
+
+
+class _FColour(_BaseFloat):
+    """
+    Float based colour.
+    """
+    def __init__(self):
+        super(_FColour, self).__init__(3)
+
+
+class _FFloat(_BaseFloat):
+    """
+    Float based colour.
+    """
+    def __init__(self):
+        super(_FFloat, self).__init__(1)
+
+
+class _FRotation(_BaseFloat):
+    """
+    Parses four floats or a multi four floats.
+    """
+    def __init__(self):
+        super(_FRotation, self).__init__(4)
+
+
+class _FString(_BaseMultiAble):
+    """
+    Parses a single string or multi string field or event.
+    """
+    def __init__(self):
+        super(_FString, self).__init__()
+        self._parsing_string = False
 
     def parse(self, line_elements):
-        if line_elements:
-            global dummy_count
+        while line_elements and not self.isFinished():
             element = line_elements.pop(0)
-            if _isOpenScopeMarker(element):
-                dummy_count += 1
-                print('enter dummy', dummy_count, element)
-                self._active_state = _DummyState(self)
-                self._data = _getTypeForMarker(element)
-            elif _isCloseScopeMarker(element):
-                print('exit dummy', dummy_count, element)
-                dummy_count  -= 1
-#                 line_elements = [element] + line_elements
-                self._active_state = self._parent
-            
-        return line_elements
-
-def _getStateForNode(node, parent):
-    if node == 'Appearance':
-        return _AppearanceState(parent)
-    elif node == 'IndexedFaceSet':
-        return _IndexedFaceSetState(parent)
-    elif node == 'Material':
-        return _MaterialState(parent)
-    elif node in ['Coordinate', 'Normal']:
-        return _ListValueState(parent)
-    elif node in ['point', 'vector']:
-        return _ValueState(parent)
-    elif node == 'coordIndex':
-        return _CoordIndexState(parent)
-    
-    return _DummyState(parent)
-
-def _isOpenScopeMarker(marker):
-    if marker in ['{', '[']:
-        return True
-    
-    return False
-
-
-def _isCloseScopeMarker(marker):
-    if marker in ['}', ']']:
-        return True
-    
-    return False
+            if self.isOpenMarker(element):
+                #  Multi string
+                self.setMulti()
+                self._data = []
+            elif self.isCloseMarker(element):
+                self.setMulti(False)
+                self.setFinished()
+            else:
+                if self._data is None:
+                    self._data = ''
+                index = element.find("\"")
+                # Find the index again if the quote is escaped.
+                while index > 0 and element[index - 1] == '\\':
+                    index = element.find("\"", index + 1)
+                if self._parsing_string:
+                    inclusive_index = index + 1
+                    if self.isMulti():
+                        stem_string = self._data.pop()
+                        if index > -1:
+                            stem_string += ' ' + element[:inclusive_index]
+                        else:
+                            stem_string += ' ' + element
+                        self._data.append(stem_string)
+                    else:
+                        if index > -1:
+                            self._data += ' ' + element[:inclusive_index]
+                        else:
+                            self._data += ' ' + element
+                    if index > -1:
+                        self._parsing_string = False
+                        if not self.isMulti():
+                            self.setFinished()
+                else:
+                    self._parsing_string = True
+                    if self.isMulti():
+                        self._data.append(element)
+                    else:
+                        self._data += element
 
 
-def _getTypeForMarker(marker):
-    if marker == '{':
-        return {}
-    elif marker == '[':
-        return []
+class _BaseNode(_BaseParse):
+    """
+    Base node for all nodes.
+    """
+    def __init__(self):
+        super(_BaseNode, self).__init__()
+        self._name = ''
+        self._active_field = None
+        self._field_parser = None
+        self._fields = []
+        self._field_types = []
+        self._open_marker = '{'
+        self._close_marker = '}'
+
+    def clear(self):
+        self._active_field = None
+        self._field_parser = None
+
+    def getName(self):
+        return self._name
+
+    def isOpenMarker(self, marker):
+        return marker == self._open_marker
+
+    def isCloseMarker(self, marker):
+        return marker == self._close_marker
+
+    def getParser(self, field_name):
+        index = self._fields.index(field_name)
+        field_type = self._field_types[index]
+        if field_type in ['SFString', 'MFString']:
+            parser = _FString()
+        elif field_type in ['SFVec3f', 'MFVec3f']:
+            parser = _FVec3f()
+        elif field_type in ['SFRotation']:
+            parser = _FRotation()
+        elif field_type in ['SFFloat']:
+            parser = _FFloat()
+        elif field_type in ['SFColour']:
+            parser = _FColour()
+        elif field_type in ['SFNode', 'MFNode']:
+            parser = _FNode()
+        elif field_type in ['MFInt32']:
+            parser = _FInt32()
+        else:
+            raise ParseError('Unknown field type: "{0}".'.format(field_type))
+
+        return parser
+
+    def addData(self, key, data):
+        self._data[key] = data
+
+    def parse(self, line_elements):
+        while line_elements and not self.isFinished():
+            element = line_elements[0]
+            consume = True
+            if self.isOpenMarker(element):
+                self._data = {}
+            elif self._active_field is not None:
+                consume = False
+                self._field_parser.parse(line_elements)
+                if self._field_parser.isFinished():
+                    self.addData(self._active_field, self._field_parser.getData())
+                    self.clear()
+            elif self.isCloseMarker(element):
+                self.setFinished()
+            else:
+                self._active_field = element
+                self._field_parser = self.getParser(element)
+
+            if consume:
+                line_elements.pop(0)
+
+
+class _WorldInfoNode(_BaseNode):
+    """
+    WorldInfo node.  Has optional fields: title (SFString), info (MFString).
+    """
+    def __init__(self):
+        super(_WorldInfoNode, self).__init__()
+        self._name = 'WorldInfo'
+        self._fields = ['title', 'info']
+        self._field_types = ['SFString', 'MFString']
+
+
+class _ShapeNode(_BaseNode):
+    """
+    Shape node.  Has two optional fields.
+    """
+    def __init__(self):
+        super(_ShapeNode, self).__init__()
+        self._name = 'Shape'
+        self._fields = ['appearance', 'geometry']
+        self._field_types = ['MFNode', 'MFNode']
+
+
+class _AppearanceNode(_BaseNode):
+    """
+    Shape node.  Has two optional fields.
+    """
+    def __init__(self):
+        super(_AppearanceNode, self).__init__()
+        self._name = 'Appearance'
+        self._fields = ['material', 'texture', 'textureTransform']
+        self._field_types = ['MFNode', 'MFNode', 'MFNode']
+
+
+class _MaterialNode(_BaseNode):
+    """
+    Shape node.  Has two optional fields.
+    """
+    def __init__(self):
+        super(_MaterialNode, self).__init__()
+        self._name = 'Material'
+        self._fields = ['ambientIntensity', 'diffuseColor', 'emissiveColor', 'shininess', 'specularColor', 'transparency']
+        self._field_types = ['SFFloat', 'SFColour', 'SFColour', 'SFFloat', 'SFColour', 'SFFloat']
+
+
+class _TransformNode(_BaseNode):
+    """
+    Transform node.  Has eight optional fields.
+    """
+    def __init__(self):
+        super(_TransformNode, self).__init__()
+        self._name = 'Transform'
+        self._fields = ['center', 'children', 'rotation', 'scale',
+                        'scaleOrientation', 'translation', 'bboxCenter', 'bboxSize']
+        self._field_types = ['SFVec3f', 'MFNode', 'SFRotation', 'SFVec3f',
+                             'SFRotation', 'SFVec3f', 'SFVec3f', 'SFVec3f']
+
+
+class _IndexedFaceSetNode(_BaseNode):
+    """
+    Indexed face set node.  Has 14 optional fields.
+    """
+    def __init__(self):
+        super(_IndexedFaceSetNode, self).__init__()
+        self._name = 'IndexedFaceSet'
+        self._fields = ['color', 'coord', 'normal', 'texCoord', 'ccw', 'colorIndex', 'colorPerVertex', 'convex', 'coordIndex', 'creaseAngle', 'normalIndex', 'normalPerVertex', 'solid', 'texCoordIndex']
+        self._field_types = ['SFNode', 'SFNode', 'SFNode', 'SFNode', 'SFBool', 'MFInt32', 'SFBool', 'SFBool', 'MFInt32', 'SFFloat', 'MFInt32', 'SFBool', 'SFBool', 'MFInt32']
+
+
+class _CoordinateNode(_BaseNode):
+    """
+    Coordinate node.  Has one optional field.
+    """
+    def __init__(self):
+        super(_CoordinateNode, self).__init__()
+        self._name = 'Coordinate'
+        self._fields = ['point']
+        self._field_types = ['MFVec3f']
+
+
+class _NormalNode(_BaseNode):
+    """
+    Normal node.  Has one optional field.
+    """
+    def __init__(self):
+        super(_NormalNode, self).__init__()
+        self._name = 'Normal'
+        self._fields = ['vector']
+        self._field_types = ['MFVec3f']
 
 
 def _checkHeader(header):
     vrml, version, encoding = header.strip().split(' ')
-    #VRML V2.0 utf8
+    # VRML V2.0 utf8
     if vrml == '#VRML' and version == 'V2.0' and encoding == 'utf8':
         return True
     
@@ -445,3 +575,33 @@ def _convertToElementList(elements_list):
     return elements
 
 
+def _get_known_nodes():
+    """
+    Return a list of known node names.  Taken from the subclasses of _BaseNode.
+    :return: List of known node names.
+    """
+    return [n().getName() for n in _BaseNode.__subclasses__()]
+
+
+def _is_node(name):
+    """
+    Determine if the given name is a valid node name.
+    :param name: Name of the node to test.
+    :return: True if the node is known, False otherwise.
+    """
+    known_nodes = _get_known_nodes()
+    if name in known_nodes:
+        return True
+
+    return False
+
+
+def _get_VRML_node(name):
+    """
+    Return the node object that matches the given named node.  The name must be a valid VRML node name.
+    :param name: The name of the object to return.
+    :return: The VRML Node object that matches the given name.
+    """
+    known_nodes = _get_known_nodes()
+    index = known_nodes.index(name)
+    return _BaseNode.__subclasses__()[index]()

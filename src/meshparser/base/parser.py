@@ -4,9 +4,8 @@ from meshparser.nodepare.pare import NodePare
 class BaseParser(object):
 
     def __init__(self):
-        '''
-        Constructor
-        '''
+        self._points = None
+        self._elements = None
         self._clear()
 
     def _clear(self):
@@ -17,7 +16,7 @@ class BaseParser(object):
         """
         Tries to determine whether this parser can parse the given filename.  May return false negatives!
         :param filename: The filename of the file to parse.
-        :return: True is this parser can pass the given filename, otherwise False.
+        :return: True if this parser can pass the given filename, otherwise False.
         """
         return False
 
@@ -61,12 +60,10 @@ class BaseParser(object):
         if pared or not zero_based:
             modified_elements = []
             for element in elements:
-                modified_element = [index + offset if np is None else np.getParedIndex(index) + offset for index in element]
+                modified_element = [index + offset if np is None else np.getParedIndex(index) + offset
+                                    for index in element]
                 modified_elements.append(modified_element)
 
             elements = modified_elements
 
         return elements
-
-
-

@@ -1,0 +1,1035 @@
+#VRML V2.0 utf8
+
+WorldInfo {
+  info	[ "Created in CosmoWorlds",
+	    "Packaged by CosmoPackage" ]
+}
+Transform {
+  children	Shape {
+    appearance	Appearance {
+      material	Material {
+	ambientIntensity	0.519749
+	diffuseColor	0.176164 0.303858 0.144138
+	specularColor	0.465986 0.253598 0.247999
+	emissiveColor	0 0 0
+	shininess	0.448649
+	transparency	0
+      }
+
+      texture	NULL
+
+      textureTransform	NULL
+
+    }
+
+    geometry	Extrusion {
+      beginCap	TRUE
+      crossSection	[ 1 0.2,
+	        1 -0.866025,
+	        -1 -0.866025,
+	        -1 0.2 ]
+      endCap	TRUE
+      orientation	[ 0 0 1  0,
+	        0 0 1  0 ]
+      scale	[ 1 1,
+	        1 1 ]
+      solid	FALSE
+      spine	[ 0 -1 0,
+	        0 1 0 ]
+    }
+
+  }
+
+  translation	19.7344 -97.5361 -20.0389
+  rotation	-1.67149e-08 1 -8.78133e-08  3.14159
+  scale	14.4382 11.305 19.3334
+  scaleOrientation	0 0 1  0
+}
+Transform {
+  children	[
+    Transform {
+      children	[
+	DEF SaluteSensor TouchSensor {
+	}
+	Group {
+	  children	Shape {
+	    appearance	Appearance {
+	      material	NULL
+
+	      texture	ImageTexture {
+		url	"hofmann.gif"
+	      }
+
+	      textureTransform	NULL
+
+	    }
+
+	    geometry	IndexedFaceSet {
+	      coord	Coordinate {
+		point	[ 0 0 0,
+			  2.46 0 0,
+			  2.46 3.41 0,
+			  0 3.41 0 ]
+	      }
+
+	      color	NULL
+
+	      coordIndex	[ 0, 1, 2, 3, -1 ]
+	      normal	NULL
+
+	      texCoord	TextureCoordinate {
+		point	[ 0 0,
+			  1 0,
+			  1 1,
+			  0 1 ]
+	      }
+
+	    }
+
+	  }
+
+	}
+      ]
+      translation	9.969 6.23 9.345
+      rotation	0.707107 -0.707106 0  3.14159
+      scale	0.999999 0.999999 1
+      scaleOrientation	0 0 -1  0.785398
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	    ambientIntensity	0.25
+	    diffuseColor	0.748016 0.299537 0
+	    specularColor	0.836364 0.836364 0.836364
+	    emissiveColor	0 0 0
+	    shininess	0.921212
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Extrusion {
+	  crossSection	[ -0.425752 -0.998345,
+		    -1 -1,
+		    -0.998313 -0.484507,
+		    -0.425752 -0.998345 ]
+	  orientation	[ 0 0 1  0,
+		    0 0 1  0,
+		    0 0 1  0,
+		    0 0 1  0,
+		    0 0 1  0 ]
+	  scale	[ 1 1,
+		    1 1,
+		    1 1,
+		    1 1,
+		    1 1 ]
+	  spine	[ 2.01131 0.998313 0,
+		    2.01131 -0.998313 0,
+		    0 -1 0,
+		    0 1 0,
+		    2.01131 0.998313 0 ]
+	}
+
+      }
+
+      translation	8.21863 5.91915 8.7905
+      rotation	0.707107 -0.707106 0  3.14159
+      scale	0.9094 1.24781 0.546661
+      scaleOrientation	0 0 1  0
+    }
+  ]
+  translation	14.4751 -77.772 -21.0953
+  rotation	2.01741e-06 1.69498e-06 1  4.69998
+  scale	1.80849 1.80848 1.80849
+  scaleOrientation	-0.0648479 -0.0306389 0.997425  0.530243
+}
+Transform {
+  children	[
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	DEF _0 Material {
+	    ambientIntensity	0.25
+	    diffuseColor	0.904409 0.150314 0
+	    specularColor	0.0955906 0.0955906 0.0955906
+	    emissiveColor	0 0 0
+	    shininess	0.078125
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Box {
+	}
+
+      }
+
+      translation	0 0 0
+      scale	1 0.1 1
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	USE _0
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	  radius	0.1
+	  height	0.2
+	}
+
+      }
+
+      translation	0.8 1 0.8
+      rotation	0 0 1  0
+      scale	0.5 10 0.5
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	USE _0
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	  radius	0.1
+	  height	0.2
+	}
+
+      }
+
+      translation	0.8 1 -0.8
+      scale	0.5 10 0.5
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	USE _0
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	  radius	0.1
+	  height	0.2
+	}
+
+      }
+
+      translation	-0.8 1 -0.8
+      scale	0.5 10 0.5
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	USE _0
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	  radius	0.1
+	  height	0.2
+	}
+
+      }
+
+      translation	-0.8 1 0.8
+      scale	0.5 10 0.5
+    }
+  ]
+  translation	23.4551 -102.564 -15.4206
+  rotation	0.305003 -0.00189137 0.95235  3.12978
+  scale	3.07705 3.07705 8.09095
+  scaleOrientation	4.66538e-07 -1.54523e-05 1  0.0143359
+}
+Transform {
+  children	[
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Extrusion {
+	  beginCap	TRUE
+	  crossSection	[ 1 0,
+		    0.92388 0.382683,
+		    0.707107 0.707106,
+		    0.382684 0.923879,
+		    1.26759e-06 1,
+		    -0.382682 0.92388,
+		    -0.707105 0.707108,
+		    -0.923879 0.382685,
+		    -1 2.53518e-06,
+		    -0.923881 -0.382681,
+		    -0.707109 -0.707105,
+		    -0.382687 -0.923878,
+		    -3.80277e-06 -1,
+		    0.38268 -0.923881,
+		    0.707104 -0.70711,
+		    0.923878 -0.382688,
+		    1 0 ]
+	  endCap	TRUE
+	  orientation	[ 0 0 1  0,
+		    0 0 1  0,
+		    0 0 1  0,
+		    0 0 1  0,
+		    0 0 1  0,
+		    0 0 1  0 ]
+	  scale	[ 0.2 0.2,
+		    0.2 0.2,
+		    0.2 0.2,
+		    0.2 0.2,
+		    0.2 0.2,
+		    0.2 0.2 ]
+	  solid	FALSE
+	  spine	[ 1 0 0,
+		    0.92388 0.382683 0,
+		    0.707107 0.707106 0,
+		    0.382684 0.923879 0,
+		    1.26759e-06 1 0,
+		    -0.382682 0.92388 0 ]
+	}
+
+      }
+
+      translation	-0.998668 -4.49002 -0.481968
+      rotation	-0.0446978 0.0206702 0.998787  3.09535
+      scale	0.579889 0.579889 0.579889
+      scaleOrientation	0.170747 0.239944 0.955653  4.6153
+      center	0.903054 0.161149 4.33063e-08
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cone {
+	}
+
+      }
+
+      translation	-1.10395 2.3623 -0.494479
+      rotation	0.998234 0.0594021 0  3.14159
+      scale	0.22405 0.3659 0.22405
+      scaleOrientation	0 0 1  0
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	    ambientIntensity	0.249999
+	    diffuseColor	0.424238 0.424238 0.424238
+	    specularColor	0.168 0.168 0.168
+	    emissiveColor	0 0 0
+	    shininess	0.153696
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cone {
+	}
+
+      }
+
+      translation	-1.48019 3.04669 -0.529023
+      rotation	-0.0951943 0.0847132 0.991848  4.58787
+      scale	0.268787 0.268787 0.268787
+      scaleOrientation	-0.114995 -0.195144 -0.97401  0.456106
+    }
+    Transform {
+      children	[
+	Transform {
+	  children	Shape {
+	    appearance	Appearance {
+	      material	DEF _1 Material {
+	      }
+
+	      texture	NULL
+
+	      textureTransform	NULL
+
+	    }
+
+	    geometry	Cone {
+	    }
+
+	  }
+
+	  translation	-1.32906 1.98257 -0.479738
+	  rotation	0 0 1  3.21176
+	  scale	0.189108 0.453059 0.189108
+	  scaleOrientation	0 0 1  0
+	}
+	Transform {
+	  children	Shape {
+	    appearance	Appearance {
+	      material	DEF _2 Material {
+	      }
+
+	      texture	NULL
+
+	      textureTransform	NULL
+
+	    }
+
+	    geometry	Cylinder {
+	    }
+
+	  }
+
+	  translation	-0.700794 2.42845 -0.358277
+	  rotation	-0.493057 -0.292049 0.819513  4.49037
+	  scale	0.18305 0.96 0.18305
+	  scaleOrientation	4.81008e-08 -1 -8.3498e-09  0.71445
+	}
+      ]
+      translation	0.179892 0.501094 1.19209e-07
+    }
+    Transform {
+      children	[
+	Transform {
+	  children	[
+	    Transform {
+	      children	Shape {
+		appearance	Appearance {
+		  material	Material {
+		    ambientIntensity	0.2
+		    diffuseColor	0.8 0.8 0.8
+		    specularColor	0 0 0
+		    emissiveColor	0 0 0
+		    shininess	0.2
+		    transparency	0.606383
+		  }
+
+		  texture	NULL
+
+		  textureTransform	NULL
+
+		}
+
+		geometry	Cylinder {
+		}
+
+	      }
+
+	      translation	-0.812483 -1.41381 -0.481082
+	      rotation	2.75195e-09 1.26772e-06 1  3.28596
+	      scale	0.225572 3.27241 0.225572
+	      scaleOrientation	0 0 1  0
+	    }
+	    Transform {
+	      children	Shape {
+		appearance	Appearance {
+		  material	USE _1
+
+		  texture	NULL
+
+		  textureTransform	NULL
+
+		}
+
+		geometry	Cylinder {
+		}
+
+	      }
+
+	      translation	-0.821027 -1.39438 -0.474315
+	      rotation	0.997396 0.0721221 1.4248e-14  3.14159
+	      scale	0.166916 3.43944 0.166916
+	      scaleOrientation	0 0 1  0
+	    }
+	  ]
+	}
+	Transform {
+	  children	[
+	    Transform {
+	      children	Shape {
+		appearance	Appearance {
+		  material	USE _2
+
+		  texture	NULL
+
+		  textureTransform	NULL
+
+		}
+
+		geometry	Sphere {
+		}
+
+	      }
+
+	      translation	0.151932 0.0309256 -5.45233
+	      scale	0.704375 0.704375 0.704375
+	    }
+	    Transform {
+	      children	Shape {
+		appearance	Appearance {
+		  material	USE _2
+
+		  texture	NULL
+
+		  textureTransform	NULL
+
+		}
+
+		geometry	Cylinder {
+		}
+
+	      }
+
+	      translation	0.165998 0.113241 -4.66866
+	      rotation	1 0.000513145 -0.000576636  1.45441
+	      scale	0.288184 0.789068 0.288184
+	      scaleOrientation	-3.08509e-06 1 2.69577e-08  0.00338291
+	    }
+	  ]
+	  translation	-3.54154 2.09007 -1.10616
+	  rotation	0 1 0  4.51999
+	  scale	1.00018 1.00018 1.0002
+	  scaleOrientation	0 1 0  0.00182698
+	}
+	Transform {
+	  children	[
+	    Transform {
+	      children	Shape {
+		appearance	Appearance {
+		  material	Material {
+		  }
+
+		  texture	NULL
+
+		  textureTransform	NULL
+
+		}
+
+		geometry	Cone {
+		}
+
+	      }
+
+	      translation	2.01118 -2.78813 -0.65612
+	      rotation	0.594195 0.723219 0.351974  3.81846
+	      scale	0.215495 0.215495 0.215495
+	      scaleOrientation	-0.979373 -0.140176 0.145527  0.171761
+	    }
+	    Transform {
+	      children	[
+		Transform {
+		  children	Shape {
+		    appearance	Appearance {
+		      material	USE _2
+
+		      texture	NULL
+
+		      textureTransform	NULL
+
+		    }
+
+		    geometry	Cylinder {
+		    }
+
+		  }
+
+		  translation	-0.134776 0.123903 0.196477
+		  rotation	-0.500966 0.824036 0.264571  3.96253
+		  scale	0.209778 0.539342 0.209779
+		  scaleOrientation	-7.27067e-06 1 6.70371e-07  0.0374298
+		}
+		Transform {
+		  children	Shape {
+		    appearance	Appearance {
+		      material	USE _2
+
+		      texture	NULL
+
+		      textureTransform	NULL
+
+		    }
+
+		    geometry	Sphere {
+		    }
+
+		  }
+
+		  translation	0.12677 -0.116542 -0.184806
+		  rotation	1 -6.9943e-08 -6.67108e-08  1.5708
+		  scale	0.209778 0.209778 0.209778
+		  scaleOrientation	-0.995012 -0.095293 0.0294957  1.57168
+		}
+	      ]
+	      translation	2.70773 -2.6848 -0.582181
+	      rotation	0.0649284 -0.816166 0.574158  1.19818
+	      scale	1.00031 1.0003 0.999703
+	      scaleOrientation	0.855631 -0.00440388 0.517568  0.211744
+	    }
+	  ]
+	  translation	-1.47753 -2.49189 0.285883
+	  rotation	0 0 1  0
+	}
+      ]
+      translation	0.179892 0.501094 1.19209e-07
+    }
+  ]
+  translation	25.169 -101.158 -11.6826
+  rotation	0.463623 -0.420222 -0.780043  1.62692
+  scale	0.811446 0.811444 0.811445
+  scaleOrientation	0.655408 -0.7245 -0.213401  0.502467
+  center	0.0165684 2.90111 -0.265982
+}
+Transform {
+  children	[
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	DEF _3 Material {
+	    ambientIntensity	0.253969
+	    diffuseColor	0 0.122449 0
+	    specularColor	0 0.303255 0.348166
+	    emissiveColor	0 0 0
+	    shininess	0.194595
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Box {
+	}
+
+      }
+
+      translation	7.45916 1.83124 -7.94918
+      rotation	-0.707106 0.707108 3.05529e-07  3.14159
+      scale	1.35448 0.125215 2.08556
+      scaleOrientation	0 0 1  0
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	USE _3
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	}
+
+      }
+
+      translation	4.38583 1.81056 -6.16249
+      rotation	-0.707106 0.707108 3.01862e-07  3.14159
+      scale	0.147636 2.95272 0.147636
+      scaleOrientation	5.46891e-09 -1 2.37737e-07  0.0460084
+    }
+    Transform {
+      children	[
+	Transform {
+	  children	Shape {
+	    appearance	Appearance {
+	      material	USE _3
+
+	      texture	NULL
+
+	      textureTransform	NULL
+
+	    }
+
+	    geometry	Cylinder {
+	      radius	0.1
+	      height	0.2
+	    }
+
+	  }
+
+	  translation	1.95955 0.814434 -5.10847
+	  rotation	-0.589349 0.733899 -0.337726  4.17062
+	  scale	2.02633 13.4405 2.02634
+	  scaleOrientation	2.28587e-07 -1 2.15277e-07  0.156968
+	}
+	Transform {
+	  children	Shape {
+	    appearance	Appearance {
+	      material	USE _3
+
+	      texture	NULL
+
+	      textureTransform	NULL
+
+	    }
+
+	    geometry	Extrusion {
+	      beginCap	TRUE
+	      crossSection	[ 1 0,
+		        0.92388 0.382683,
+		        0.707107 0.707106,
+		        0.382684 0.923879,
+		        1.26759e-06 1,
+		        -0.382682 0.92388,
+		        -0.707105 0.707108,
+		        -0.923879 0.382685,
+		        -1 2.53518e-06,
+		        -0.923881 -0.382681,
+		        -0.707109 -0.707105,
+		        -0.382687 -0.923878,
+		        -3.80277e-06 -1,
+		        0.38268 -0.923881,
+		        0.707104 -0.70711,
+		        0.923878 -0.382688,
+		        1 0 ]
+	      endCap	TRUE
+	      orientation	[ 0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0 ]
+	      scale	[ 0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2 ]
+	      solid	FALSE
+	      spine	[ 1 0 0,
+		        0.92388 0.382683 0,
+		        0.707107 0.707106 0,
+		        0.382684 0.923879 0,
+		        1.26759e-06 1 0,
+		        -0.382682 0.92388 0,
+		        -0.707105 0.707108 0 ]
+	    }
+
+	  }
+
+	  translation	-0.139271 1.16659 -4.95375
+	  rotation	0.989271 0.0974093 -0.108878  0.230677
+	  scale	1 0.999999 0.999999
+	  scaleOrientation	-0.964404 -0.261446 -0.0396326  1.57278
+	}
+	Transform {
+	  children	Shape {
+	    appearance	Appearance {
+	      material	USE _3
+
+	      texture	NULL
+
+	      textureTransform	NULL
+
+	    }
+
+	    geometry	Extrusion {
+	      beginCap	TRUE
+	      crossSection	[ 1 0,
+		        0.92388 0.382683,
+		        0.707107 0.707106,
+		        0.382684 0.923879,
+		        1.26759e-06 1,
+		        -0.382682 0.92388,
+		        -0.707105 0.707108,
+		        -0.923879 0.382685,
+		        -1 2.53518e-06,
+		        -0.923881 -0.382681,
+		        -0.707109 -0.707105,
+		        -0.382687 -0.923878,
+		        -3.80277e-06 -1,
+		        0.38268 -0.923881,
+		        0.707104 -0.70711,
+		        0.923878 -0.382688,
+		        1 0 ]
+	      endCap	TRUE
+	      orientation	[ 0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0,
+		        0 0 1  0 ]
+	      scale	[ 0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2,
+		        0.2 0.2 ]
+	      solid	FALSE
+	      spine	[ 1 0 0,
+		        0.92388 0.382683 0,
+		        0.707107 0.707106 0,
+		        0.382684 0.923879 0,
+		        1.26759e-06 1 0,
+		        -0.382682 0.92388 0,
+		        -0.707105 0.707108 0 ]
+	    }
+
+	  }
+
+	  translation	-0.14499 1.14289 -4.9501
+	  rotation	0.977197 -0.205456 -0.0536125  3.11905
+	  scale	1 1 1
+	  scaleOrientation	0.535471 0.0188476 -0.844343  0.476372
+	  center	0.922672 0.125732 1.61053e-06
+	}
+      ]
+      translation	5.18702 2.25341 -7.7362
+      rotation	0.764407 -0.000119677 0.644734  3.2664
+      scale	0.386937 0.386939 0.386936
+      scaleOrientation	-0.0742747 0.984089 -0.161407  0.44648
+    }
+  ]
+  translation	27.9225 -94.6623 -4.83439
+  rotation	0.264861 -0.268165 0.926248  4.62348
+  scale	1 1 0.999997
+  scaleOrientation	0.864636 0.341972 0.368048  0.432408
+}
+Transform {
+  children	[
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	    ambientIntensity	0.246032
+	    diffuseColor	0.251104 0.312562 0.201724
+	    specularColor	0.209184 0.113842 0.111328
+	    emissiveColor	0 0 0
+	    shininess	0.0867347
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Box {
+	}
+
+      }
+
+      translation	0 0 0
+      scale	0.1 0.1 0.00355328
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	    ambientIntensity	0.246032
+	    diffuseColor	0.251104 0.312562 0.201724
+	    specularColor	0.209184 0.113842 0.111328
+	    emissiveColor	0 0 0
+	    shininess	0.0867347
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	  radius	0.1
+	  height	0.2
+	}
+
+      }
+
+      translation	0.0298342 0.12923 0.000770278
+      rotation	0.995488 0.070976 -0.0629742  1.45595
+      scale	0.1 0.999999 0.0999999
+      scaleOrientation	-1.60109e-07 -1 8.12303e-08  0.0117188
+      center	0.00018428 -0.0992298 1.76557e-08
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	    ambientIntensity	0.246032
+	    diffuseColor	0.251104 0.312562 0.201724
+	    specularColor	0.209184 0.113842 0.111328
+	    emissiveColor	0 0 0
+	    shininess	0.0867347
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	  radius	0.1
+	  height	0.2
+	}
+
+      }
+
+      translation	0.0379782 0.060548 0.00945181
+      rotation	0.994886 0.0771386 -0.0652034  1.77453
+      scale	0.0999999 0.999999 0.0999999
+      scaleOrientation	7.52586e-09 1 7.52586e-09  1.5708
+      center	-0.00797585 -0.0905481 -2.58018e-08
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	    ambientIntensity	0.246032
+	    diffuseColor	0.251104 0.312562 0.201724
+	    specularColor	0.209184 0.113842 0.111328
+	    emissiveColor	0 0 0
+	    shininess	0.0867347
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	  radius	0.1
+	  height	0.2
+	}
+
+      }
+
+      translation	-0.0286653 0.129329 0.000670791
+      rotation	0.99475 -0.076645 0.0678061  1.45379
+      scale	0.1 0.999999 0.0999999
+      scaleOrientation	2.40362e-07 1 2.41302e-07  0.00390625
+      center	-0.00148302 -0.0993293 1.73001e-08
+    }
+    Transform {
+      children	Shape {
+	appearance	Appearance {
+	  material	Material {
+	    ambientIntensity	0.246032
+	    diffuseColor	0.251104 0.312562 0.201724
+	    specularColor	0.209184 0.113842 0.111328
+	    emissiveColor	0 0 0
+	    shininess	0.0867347
+	    transparency	0
+	  }
+
+	  texture	NULL
+
+	  textureTransform	NULL
+
+	}
+
+	geometry	Cylinder {
+	  radius	0.1
+	  height	0.2
+	}
+
+      }
+
+      translation	-0.0311517 0.0621377 0.0386023
+      rotation	0.99714 -0.0578524 0.0486326  1.74635
+      scale	0.0999999 0.999999 0.0999999
+      scaleOrientation	-1.47015e-07 -1 1.40828e-07  0.0621774
+      center	-6.10948e-08 -0.0845495 -0.0216606
+    }
+  ]
+  translation	25.0467 -100.584 -11.9079
+  rotation	0.0264527 0.716678 -0.696902  3.13575
+  scale	5.93722 5.93721 6.9105
+  scaleOrientation	-6.02775e-06 3.88132e-06 -1  0.208387
+}
+DEF VP1 Viewpoint {
+  position	17.1016 -92.46 -64.7753
+  orientation	6.0769e-08 1 -7.73265e-08  3.19395
+  fieldOfView	0.785398
+  description	"VRML and Chemistry"
+}
+DEF VP2 Viewpoint {
+  position	23.9012 -99.6738 -25.8454
+  orientation	-0.00023713 0.99957 0.0293284  3.23163
+  fieldOfView	0.785398
+  description	"Distillation apparatus"
+}
+DEF VP3 Viewpoint {
+  position	25.0364 -100.366 -14.3179
+  orientation	0.00470661 0.990959 0.13408  3.24495
+  fieldOfView	0.785398
+  description	"Tripodish"
+}
+DEF VP4 Viewpoint {
+  position	25.0222 -100.299 -15.1252
+  orientation	-0.000277176 0.988495 -0.151255  3.16089
+  fieldOfView	0.785398
+  description	"Roundbottom flask"
+}
+DEF VP5 Viewpoint {
+  position	23.4321 -100.732 -17.8683
+  orientation	0.0101471 0.940243 -0.340354  3.05844
+  fieldOfView	0.785398
+  description	"Condenser"
+}
+DEF VP6 Viewpoint {
+  position	22.3534 -100.637 -19.318
+  orientation	0.019073 0.99198 -0.124945  2.92593
+  fieldOfView	0.785398
+  description	"Test tube"
+}
+DEF VP7 Viewpoint {
+  position	21.9918 -100.778 -12.137
+  orientation	0.0437131 0.921278 -0.386439  3.1898
+  fieldOfView	0.785398
+  description	"August von Hofmann"
+}

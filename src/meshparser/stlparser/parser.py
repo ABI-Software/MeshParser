@@ -1,12 +1,10 @@
-from zipfile import ZipFile, is_zipfile
-
 import struct
+from zipfile import ZipFile, is_zipfile
 
 from meshparser.base.parser import BaseParser
 
 
 class STLParser(BaseParser):
-
 
     def __init__(self):
         super(STLParser, self).__init__()
@@ -16,15 +14,17 @@ class STLParser(BaseParser):
         if is_zipfile(filename):
             with ZipFile(filename) as stlzip:
                 zipinfolist = stlzip.infolist()
-                if len(zipinfolist) != 1:
-                    print('More than one file in archive ... exiting')
-                    return
-                zipinfo = zipinfolist[0]
-                data = stlzip.read(zipinfo.filename)
-                if 'solid' in data[:80].decode("utf-8"):
-                    parseable = True
+                if len(zipinfolist) == 1:
+                    zipinfo = zipinfolist[0]
+                    data = stlzip.read(zipinfo.filename)
+                    # Try and determine if this is an ASCII zipped file or binary zipped file.
+                    first_bytes = data[:90]
+                    if _is_ascii_stl(first_bytes) or _is_binary_stl(first_bytes):
+                        parseable = True
         else:
-            parseable = _is_ascii_stl(filename)
+            with open(filename, 'rb') as f:
+                first_bytes = f.read(90)
+                parseable = _is_ascii_stl(first_bytes)
 
         return parseable
 
@@ -33,24 +33,31 @@ class STLParser(BaseParser):
         if is_zipfile(filename):
             with ZipFile(filename) as stlzip:
                 zipinfolist = stlzip.infolist()
-                if len(zipinfolist) != 1:
-                    print('More than one file in archive ... exiting')
-                    return 
-                zipinfo = zipinfolist[0]
-                data = stlzip.read(zipinfo.filename)
-                if 'solid' in data[:80].decode("utf-8"):
-                    lines = data.decode("utf-8").split('\n')
-                    self._parseASCII(lines)
-                else:
-                    self._parseBinary(data)
-        elif _is_ascii_stl(filename):
-            with open(filename) as f:
-                lines = f.readlines()
-                self._parseASCII(lines)
+                if len(zipinfolist) == 1:
+                    zipinfo = zipinfolist[0]
+                    data = stlzip.read(zipinfo.filename)
+                    first_bytes = data[:90]
+                    if _is_ascii_stl(first_bytes):
+                        lines = data.decode("utf-8").split('\n')
+                        self._parseASCII(lines)
+                    elif _is_binary_stl(first_bytes):
+                        self._parseBinary(data)
         else:
+            bin_parseable = False
             with open(filename, 'rb') as f:
-                data = f.read()
-                self._parseBinary(data)
+                first_bytes = f.read(90)
+                ascii_parseable = _is_ascii_stl(first_bytes)
+                if not ascii_parseable:
+                    bin_parseable = _is_binary_stl(first_bytes)
+
+            if ascii_parseable:
+                with open(filename) as f:
+                    lines = f.readlines()
+                    self._parseASCII(lines)
+            elif bin_parseable:
+                with open(filename, 'rb') as f:
+                    data = f.read()
+                    self._parseBinary(data)
 
     def _parseASCII(self, lines):
         lines.pop(0) # Remove header line
@@ -68,7 +75,7 @@ class STLParser(BaseParser):
                     node_indexes.append(len(self._points))
                     self._points.append(pt)
                 else:
-                    raise(Execption('Invalid vertex specified.'))
+                    raise(Exception('Invalid vertex specified.'))
 
     def _parseBinary(self, data):
         start_byte = 0
@@ -97,12 +104,33 @@ class STLParser(BaseParser):
 class _RootState(object):
     pass
 
-def _is_ascii_stl(filename):
+
+def _is_ascii_stl(first_bytes):
+    """
+    Determine if this is an ASCII based data stream, simply by checking the bytes for the word 'solid'.
+    """
     is_ascii = False
-    with open(filename, 'rb') as f:
-        first_bytes = f.read(80)
-        if 'solid' in first_bytes.decode("utf-8").lower():
-            is_ascii = True
+    if 'solid' in first_bytes.decode("utf-8").lower():
+        is_ascii = True
 
     return is_ascii
+
+
+def _is_binary_stl(data):
+    """
+    Determine if this is a binary file through unpacking the first value after the 80th character
+    and testing whether this value is greater than zero.  This indicates the number of facets in the file.
+    Could possibly extend this to check that the remaining number of bytes is divisible by 50.
+    """
+    is_bin = False
+    start_byte = 0
+    end_byte = 80
+    _ = data[start_byte:end_byte] # header data
+    start_byte = end_byte
+    end_byte += 4
+    facet_count = struct.unpack('I', data[start_byte:end_byte])[0]
+    if facet_count > 0:
+        is_bin = True
+
+    return is_bin
 

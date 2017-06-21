@@ -15,7 +15,9 @@ class ParserTestCase(unittest.TestCase):
 
     def testParse1(self):
         v = VTKParser()
-        v.parse(os.path.join(file_path, 'data/cardiac_jelly.vtk'))
+        test_filename = os.path.join(file_path, 'data/cardiac_jelly.vtk')
+        self.assertTrue(v.canParse(test_filename))
+        v.parse(test_filename)
 
     def testParse2(self):
         v = VTKParser()
@@ -23,4 +25,15 @@ class ParserTestCase(unittest.TestCase):
 
         self.assertEqual(1170, len(v.getPoints()))
         self.assertEqual(2314, len(v.getElements()))
+
+    def testOldFormat(self):
+        v = VTKParser()
+        test_filename = os.path.join(file_path, 'data/old_format.vtk')
+        self.assertFalse(v.canParse(test_filename))
+        self.assertRaises(SyntaxError, v.parse, test_filename)
+
+    def testBinaryFormat(self):
+        v = VTKParser()
+        self.assertRaises(NotImplementedError, v.parse, os.path.join(file_path, 'data/fake_binary_format.vtk'))
+
 

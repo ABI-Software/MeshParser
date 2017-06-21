@@ -54,8 +54,9 @@ class _BaseState(object):
         self._parent = parent
 
     def parse(self, line):
-        raise NotImplementedError("Base class declaration.")
-        return True
+        """
+        All instantiated classes must define this method.
+        """
 
 
 class _InitState(_BaseState):
@@ -133,9 +134,8 @@ class _TopologyState(_BaseState):
                 parts = line.split(' ')
                 if len(parts):
                     polygon_size = int(parts[0])
-                    if polygon_size != len(parts[1:]):
-                        raise SyntaxError('File format not valid.')
-                    self._parent._elements.append([int(index) for index in parts[1:]])
+                    if polygon_size == len(parts[1:]):
+                        self._parent._elements.append([int(index) for index in parts[1:]])
                     self._processing['progress'] += 1
 
                 if self._processing['progress'] == self._processing['n']:

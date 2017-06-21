@@ -22,13 +22,17 @@ class ParserTestCase(unittest.TestCase):
 
     def testParse2(self):
         v = STLParser()
-        v.parse(os.path.join(file_path, 'data/ship.zip'))
+        test_filename = os.path.join(file_path, 'data/ship.zip')
+        self.assertTrue(v.canParse(test_filename))
+        v.parse(test_filename)
 
         self.assertEqual(828, len(v.getElements()))
 
     def testParse3(self):
         v = STLParser()
-        v.parse(os.path.join(file_path, 'data/pelvis.stl'))
+        test_filename = os.path.join(file_path, 'data/pelvis.stl')
+        self.assertTrue(v.canParse(test_filename))
+        v.parse(test_filename)
 
         self.assertEqual(52272, len(v.getElements())) 
 
@@ -68,6 +72,7 @@ class ParserTestCase(unittest.TestCase):
         elements = v.getElements(zero_based=False, pared=True)
         self.assertEquals([1, 4, 2], elements[1])
 
+    # @unittest.skip("Skipping long test.")
     def testFailingModelInVersion000400(self):
         v = STLParser()
         v.parse(os.path.join(file_path, 'data/amazing_alveoli_minimal.stl'))

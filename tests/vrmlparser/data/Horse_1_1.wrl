@@ -1,3 +1,3 @@
 #VRML V2.0 utf8
-Transform { children [ 'Shape' {
+Transform { children [ Shape {
 } ] }

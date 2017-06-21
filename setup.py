@@ -1,4 +1,10 @@
+import os
 from setuptools import setup, find_packages
+
+
+with open(os.path.join(os.path.dirname(__file__), 'src', 'meshparser', 'version.txt')) as f:
+    line = f.readline()
+    version = line.strip()
 
 dependencies = []
 
@@ -7,7 +13,7 @@ ready for consumption by other libraries.
 """
 
 setup(name=u'meshparser',
-      version='0.4.2',
+      version=version,
       description='A Small Python library for parsing files that describe a mesh.',
       long_description=long_description,
       classifiers=[],
@@ -17,6 +23,7 @@ setup(name=u'meshparser',
       license='Apache',
       packages=find_packages('src', exclude=['tests', 'tests.*', ]),
       package_dir={'': 'src'},
+      package_data={'': ['version.txt']},
       zip_safe=True,
       install_requires=dependencies,
       )

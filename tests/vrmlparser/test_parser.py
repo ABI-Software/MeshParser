@@ -1,9 +1,9 @@
 import os
+from pointpare import PointPare
 import unittest
 
 from meshparser.exceptions import ParseError
 from meshparser.vrmlparser.parser import VRMLParser
-from meshparser.nodepare.pare import NodePare
 
 
 file_path = os.path.dirname(os.path.realpath(__file__))
@@ -226,10 +226,10 @@ class ParserTestCase(unittest.TestCase):
         v.parse(os.path.join(file_path, 'data/Horse_1_4.wrl'))
         points = v.getPoints()
         self.assertEqual(33, len(points))
-        np = NodePare()
-        np.addPoints(points)
-        np.parePoints()
-        self.assertEqual(23, len(np.getParedPoints()))
+        pp = PointPare()
+        pp.add_points(points)
+        pp.pare_points()
+        self.assertEqual(23, len(pp.get_pared_points()))
 
 
 if __name__ == "__main__":

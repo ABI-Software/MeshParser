@@ -1,8 +1,8 @@
 import os
+from pointpare import PointPare
 import unittest
 
 from meshparser.stlparser.parser import STLParser
-from meshparser.nodepare.pare import NodePare
 
 
 file_path = os.path.dirname(os.path.realpath(__file__))
@@ -46,31 +46,31 @@ class ParserTestCase(unittest.TestCase):
         v = STLParser()
         v.parse(os.path.join(file_path, 'data/ship.stl'))
         self.assertEqual(2484, len(v.getPoints()))
-        np = NodePare()
-        np.addPoints(v.getPoints())
-        np.parePoints()
-        self.assertEqual(575, len(np.getParedPoints()))
+        pp = PointPare()
+        pp.add_points(v.getPoints())
+        pp.pare_points()
+        self.assertEqual(450, len(pp.get_pared_points()))
 
     def testZeroBased(self):
         v = STLParser()
         v.parse(os.path.join(file_path, 'data/pelvis_minimal.stl'))
         self.assertEqual(33, len(v.getPoints()))
         elements = v.getElements(zero_based=False)
-        self.assertEquals([4, 5, 6], elements[1])
+        self.assertEqual([4, 5, 6], elements[1])
 
     def testPared(self):
         v = STLParser()
         v.parse(os.path.join(file_path, 'data/pelvis_minimal.stl'))
         self.assertEqual(13, len(v.getPoints(pared=True)))
         elements = v.getElements(pared=True)
-        self.assertEquals([0, 3, 1], elements[1])
+        self.assertEqual([0, 3, 1], elements[1])
 
     def testParedZeroBased(self):
         v = STLParser()
         v.parse(os.path.join(file_path, 'data/pelvis_minimal.stl'))
         self.assertEqual(33, len(v.getPoints()))
         elements = v.getElements(zero_based=False, pared=True)
-        self.assertEquals([1, 4, 2], elements[1])
+        self.assertEqual([1, 4, 2], elements[1])
 
     # @unittest.skip("Skipping long test.")
     def testFailingModelInVersion000400(self):
@@ -78,7 +78,7 @@ class ParserTestCase(unittest.TestCase):
         v.parse(os.path.join(file_path, 'data/amazing_alveoli_minimal.stl'))
         self.assertEqual(310188, len(v.getPoints()))
         elements = v.getElements(zero_based=False, pared=True)
-        self.assertEquals([4, 1, 3], elements[1])
+        self.assertEqual([4, 1, 3], elements[1])
 
 
 if __name__ == "__main__":

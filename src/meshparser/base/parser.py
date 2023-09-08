@@ -1,4 +1,4 @@
-from meshparser.nodepare.pare import NodePare
+from pointpare import PointPare
 
 
 class BaseParser(object):
@@ -31,10 +31,10 @@ class BaseParser(object):
         """
         points = self._points[:]
         if pared:
-            np = NodePare()
-            np.addPoints(points)
-            np.parePoints()
-            points = np.getParedPoints()
+            pp = PointPare()
+            pp.add_points(points)
+            pp.pare_points()
+            points = pp.get_pared_points()
 
         return points
 
@@ -51,16 +51,16 @@ class BaseParser(object):
         if not zero_based:
             offset = 1
 
-        np = None
+        pp = None
         if pared:
-            np = NodePare()
-            np.addPoints(points)
-            np.parePoints()
+            pp = PointPare()
+            pp.add_points(points)
+            pp.pare_points()
 
         if pared or not zero_based:
             modified_elements = []
             for element in elements:
-                modified_element = [index + offset if np is None else np.getParedIndex(index) + offset
+                modified_element = [index + offset if pp is None else pp.get_pared_index(index) + offset
                                     for index in element]
                 modified_elements.append(modified_element)
 

@@ -12,7 +12,7 @@ class BaseParser(object):
         self._points = []
         self._elements = []
 
-    def canParse(self, filename):
+    def can_parse(self, filename):
         """
         Tries to determine whether this parser can parse the given filename.  May return false negatives!
         :param filename: The filename of the file to parse.
@@ -23,7 +23,7 @@ class BaseParser(object):
     def parse(self, filename):
         raise NotImplementedError('Method "parse" not implemented')
 
-    def getPoints(self, pared=False):
+    def get_points(self, pared=False):
         """
         Get the points that make up the mesh.
         :param pared: use the pared down list of points
@@ -38,7 +38,7 @@ class BaseParser(object):
 
         return points
 
-    def getElements(self, zero_based=True, pared=False):
+    def get_elements(self, zero_based=True, pared=False):
         """
         Get the elements of the mesh as a list of point index list.
         :param zero_based: use zero based index of points if true otherwise use 1-based index of points.

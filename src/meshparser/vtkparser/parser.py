@@ -12,8 +12,7 @@ class VTKParser(BaseParser):
         '''
         super(VTKParser, self).__init__()
 
-    def canParse(self, filename):
-        parseable = False
+    def can_parse(self, filename):
         state = _HeaderState(self)
         with open(filename) as f:
             lines = f.readlines()
@@ -28,15 +27,15 @@ class VTKParser(BaseParser):
     def parse(self, filename):
         self._clear()
 
-        current_state = self._nextState(_InitState())
+        current_state = self._next_state(_InitState())
         with open(filename) as f:
             lines = f.readlines()
             for line in lines:
                 line = line.rstrip()
                 if current_state is not None and current_state.parse(line):
-                    current_state = self._nextState(current_state)
+                    current_state = self._next_state(current_state)
 
-    def _nextState(self, current_state):
+    def _next_state(self, current_state):
         state_map = {
             _InitState: _HeaderState(self),
             _HeaderState: _TitleState(self),

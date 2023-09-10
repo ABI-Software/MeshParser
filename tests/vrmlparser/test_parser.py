@@ -18,20 +18,20 @@ class ParserTestCase(unittest.TestCase):
     def testParse1(self):
         v = VRMLParser()
         test_filename = os.path.join(file_path, 'data/Horse_1_1.wrl')
-        self.assertTrue(v.canParse(test_filename))
+        self.assertTrue(v.can_parse(test_filename))
         v.parse(test_filename)
 
     def testParse2(self):
         v = VRMLParser()
         v.parse(os.path.join(file_path, 'data/Horse_1_2.wrl'))
-        self.assertEqual(0, len(v.getPoints()))
+        self.assertEqual(0, len(v.get_points()))
 
     def testParse3(self):
         v = VRMLParser()
         v.parse(os.path.join(file_path, 'data/Horse_1_3.wrl'))
 
-        self.assertEqual(4572, len(v.getPoints()))
-        self.assertEqual(9120, len(v.getElements()))
+        self.assertEqual(4572, len(v.get_points()))
+        self.assertEqual(9120, len(v.get_elements()))
 
     def testOldFormat(self):
         v = VRMLParser()
@@ -55,7 +55,7 @@ class ParserTestCase(unittest.TestCase):
         fs = _FString()
         fs.parse(line_elements)
 
-        self.assertEqual("\"A test string\"", fs.getData())
+        self.assertEqual("\"A test string\"", fs.get_data())
 
     def testFStringMulti(self):
         from meshparser.vrmlparser.parser import _FString
@@ -65,7 +65,7 @@ class ParserTestCase(unittest.TestCase):
         fs = _FString()
         fs.parse(line_elements)
 
-        string_data = fs.getData()
+        string_data = fs.get_data()
         self.assertEqual("\"Another test string\"", string_data[0])
         self.assertEqual("\"More testing string\"", string_data[1])
 
@@ -78,10 +78,10 @@ class ParserTestCase(unittest.TestCase):
         line_elements_2 = str2.split()
         fs = _FString()
         fs.parse(line_elements_1)
-        self.assertFalse(fs.isFinished())
+        self.assertFalse(fs.is_finished())
         fs.parse(line_elements_2)
-        self.assertTrue(fs.isFinished())
-        string_data = fs.getData()
+        self.assertTrue(fs.is_finished())
+        string_data = fs.get_data()
         self.assertEqual("\"Another test string\"", string_data[0])
         self.assertEqual("\"More testing string\"", string_data[1])
 
@@ -93,10 +93,10 @@ class ParserTestCase(unittest.TestCase):
 
         fv = _FVec3f()
         fv.parse(line_elements_1)
-        values = fv.getData()
-        self.assertAlmostEquals(0.176164, values[0])
-        self.assertAlmostEquals(0.303858, values[1])
-        self.assertAlmostEquals(0.144138, values[2])
+        values = fv.get_data()
+        self.assertAlmostEqual(0.176164, values[0])
+        self.assertAlmostEqual(0.303858, values[1])
+        self.assertAlmostEqual(0.144138, values[2])
 
     def testFVec3fSingle2(self):
         from meshparser.vrmlparser.parser import _FVec3f
@@ -106,12 +106,12 @@ class ParserTestCase(unittest.TestCase):
 
         fv = _FVec3f()
         fv.parse(line_elements_1)
-        values = fv.getData()
-        self.assertAlmostEquals(-1.67149e-08, values[0])
-        self.assertAlmostEquals(-8.78133e-08, values[1])
-        self.assertAlmostEquals(3.14159, values[2])
+        values = fv.get_data()
+        self.assertAlmostEqual(-1.67149e-08, values[0])
+        self.assertAlmostEqual(-8.78133e-08, values[1])
+        self.assertAlmostEqual(3.14159, values[2])
 
-        self.assertTrue(fv.isFinished())
+        self.assertTrue(fv.is_finished())
 
     def testFNodeSimple(self):
         from meshparser.vrmlparser.parser import _FNode
@@ -120,7 +120,7 @@ class ParserTestCase(unittest.TestCase):
         line_elements_1 = str1.split()
         fn = _FNode()
         fn.parse(line_elements_1)
-        values = fn.getData()
+        values = fn.get_data()
         self.assertIn('Transform', values)
 
     def testFNodeMulti(self):
@@ -131,7 +131,7 @@ class ParserTestCase(unittest.TestCase):
         line_elements_1 = str1.split()
         fn = _FNode()
         fn.parse(line_elements_1)
-        values = fn.getData()
+        values = fn.get_data()
         self.assertEqual(1, len(values))
         self.assertIn('Shape', values[0])
 
@@ -171,7 +171,7 @@ class ParserTestCase(unittest.TestCase):
                 line_elements = line.split()
                 node.parse(line_elements)
 
-            self.assertTrue(node.isFinished())
+            self.assertTrue(node.is_finished())
             self.assertIn('children', node._data)
             self.assertEqual(1, len(node._data['children']))
 
@@ -187,7 +187,7 @@ class ParserTestCase(unittest.TestCase):
                 line_elements = line.split()
                 node.parse(line_elements)
 
-            self.assertTrue(node.isFinished())
+            self.assertTrue(node.is_finished())
             self.assertIn('children', node._data)
             self.assertEqual(1, len(node._data['children']))
             self.assertIn('Shape', node._data['children'][0])
@@ -206,7 +206,7 @@ class ParserTestCase(unittest.TestCase):
                 line_elements = line.split()
                 node.parse(line_elements)
 
-            self.assertTrue(node.isFinished())
+            self.assertTrue(node.is_finished())
             self.assertIn('children', node._data)
             self.assertEqual(1, len(node._data['children']))
             self.assertIn('Shape', node._data['children'][0])
@@ -224,7 +224,7 @@ class ParserTestCase(unittest.TestCase):
     def testDuplicatedPoints(self):
         v = VRMLParser()
         v.parse(os.path.join(file_path, 'data/Horse_1_4.wrl'))
-        points = v.getPoints()
+        points = v.get_points()
         self.assertEqual(33, len(points))
         pp = PointPare()
         pp.add_points(points)

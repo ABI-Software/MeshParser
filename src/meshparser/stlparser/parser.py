@@ -9,7 +9,7 @@ class STLParser(BaseParser):
     def __init__(self):
         super(STLParser, self).__init__()
 
-    def canParse(self, filename):
+    def can_parse(self, filename):
         parseable = False
         if is_zipfile(filename):
             with ZipFile(filename) as stlzip:
@@ -39,9 +39,9 @@ class STLParser(BaseParser):
                     first_bytes = data[:90]
                     if _is_ascii_stl(first_bytes):
                         lines = data.decode("utf-8").split('\n')
-                        self._parseASCII(lines)
+                        self._parse_ascii(lines)
                     elif _is_binary_stl(first_bytes):
-                        self._parseBinary(data)
+                        self._parse_binary(data)
         else:
             bin_parseable = False
             with open(filename, 'rb') as f:
@@ -53,15 +53,16 @@ class STLParser(BaseParser):
             if ascii_parseable:
                 with open(filename) as f:
                     lines = f.readlines()
-                    self._parseASCII(lines)
+                    self._parse_ascii(lines)
             elif bin_parseable:
                 with open(filename, 'rb') as f:
                     data = f.read()
-                    self._parseBinary(data)
+                    self._parse_binary(data)
 
-    def _parseASCII(self, lines):
+    def _parse_ascii(self, lines):
+        node_indexes = None
         lines.pop(0) # Remove header line
-        lines.pop() # remove endsolid
+        lines.pop() # remove end solid
         for line in lines:
             line = line.strip()
             if line.startswith('facet'):
@@ -77,7 +78,7 @@ class STLParser(BaseParser):
                 else:
                     raise(Exception('Invalid vertex specified.'))
 
-    def _parseBinary(self, data):
+    def _parse_binary(self, data):
         start_byte = 0
         end_byte = 80
         _ = data[start_byte:end_byte] # header data

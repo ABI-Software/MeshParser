@@ -8,11 +8,11 @@ class VRMLParser(BaseParser):
         super(VRMLParser, self).__init__()
         self._data = {}
 
-    def canParse(self, filename):
+    def can_parse(self, filename):
         with open(filename) as f:
             lines = f.readlines()
             header_line = lines.pop(0)
-            parseable = _checkHeader(header_line)
+            parseable = _check_header(header_line)
 
         return parseable
 
@@ -22,7 +22,7 @@ class VRMLParser(BaseParser):
         with open(filename) as f:
             lines = f.readlines()
             header_line = lines.pop(0)
-            if not _checkHeader(header_line):
+            if not _check_header(header_line):
                 raise ParseError('Header check failed')
 
             while lines:
@@ -32,12 +32,12 @@ class VRMLParser(BaseParser):
                 while len(line_elements):
                     scene.parse(line_elements)
 
-        self._data = scene.getRoot()
+        self._data = scene.get_root()
 
-        self._points = self._extractPoints()
-        self._elements = self._extractElements()
+        self._points = self._extract_points()
+        self._elements = self._extract_elements()
 
-    def _getIndexedFaceSet(self):
+    def _get_indexed_face_set(self):
         indexed_face_set = None
         if 'Transform' in self._data and 'children' in self._data['Transform']:
             if isinstance(self._data['Transform']['children'], list):
@@ -51,9 +51,9 @@ class VRMLParser(BaseParser):
 
         return indexed_face_set
 
-    def _extractPoints(self):
+    def _extract_points(self):
         points = []
-        indexed_face_set = self._getIndexedFaceSet()
+        indexed_face_set = self._get_indexed_face_set()
         if indexed_face_set is not None and 'coord' in indexed_face_set and 'Coordinate' in indexed_face_set['coord']:
             coordinates = indexed_face_set['coord']['Coordinate']
             if 'point' in coordinates:
@@ -61,12 +61,12 @@ class VRMLParser(BaseParser):
 
         return points
 
-    def _extractElements(self):
+    def _extract_elements(self):
         elements = []
-        indexed_face_set = self._getIndexedFaceSet()
+        indexed_face_set = self._get_indexed_face_set()
         if indexed_face_set is not None and 'coordIndex' in indexed_face_set:
             coordinate_indexes = indexed_face_set['coordIndex']
-            elements = _convertToElementList(coordinate_indexes)
+            elements = _convert_to_element_list(coordinate_indexes)
 
         return elements
 
@@ -130,7 +130,7 @@ class _VRMLScene(object):
         self._state = None
         self._key = None
 
-    def getRoot(self):
+    def get_root(self):
         return self._root
 
     def parse(self, line_elements):
@@ -138,19 +138,19 @@ class _VRMLScene(object):
         if self._state is None:
             element = line_elements.pop(0)
             if _is_node(element):
-                self._state = _get_VRML_node(element)
+                self._state = _get_vrml_node(element)
                 self._key = element
                 self._root[element] = {}
             else:
                 raise ParseError('Unknown node: "{0}" where node expected.'.format(element))
         else:
             self._state.parse(line_elements)
-            if self._state.isFinished():
-                self._root[self._key] = self._state.getData()
+            if self._state.is_finished():
+                self._root[self._key] = self._state.get_data()
                 self._state = None
 
 
-class _BaseParse(object):
+class _BaseParse:
     """
     Base object for all parseable classes.
     """
@@ -158,13 +158,13 @@ class _BaseParse(object):
         self._finished = False
         self._data = None
 
-    def isFinished(self):
+    def is_finished(self):
         return self._finished
 
-    def setFinished(self, state=True):
+    def set_finished(self, state=True):
         self._finished = state
 
-    def getData(self):
+    def get_data(self):
         return self._data
 
 
@@ -178,19 +178,19 @@ class _BaseMultiAble(_BaseParse):
         self._open_marker = '['
         self._close_marker = ']'
 
-    def setMulti(self, state=True):
+    def set_multi(self, state=True):
         self._multi = state
 
-    def isMulti(self):
+    def is_multi(self):
         return self._multi
 
-    def isOpenMarker(self, marker):
+    def is_open_marker(self, marker):
         return marker == self._open_marker
 
-    def isCloseMarker(self, marker):
+    def is_close_marker(self, marker):
         return marker == self._close_marker
 
-    def addData(self, data):
+    def add_data(self, data):
         if self._multi:
             self._data.append(data)
         else:
@@ -211,26 +211,26 @@ class _FNode(_BaseMultiAble):
         self._active_state = None
 
     def parse(self, line_elements):
-        while line_elements and not self.isFinished():
+        while line_elements and not self.is_finished():
             element = line_elements[0]
             consume = True
-            if self.isOpenMarker(element):
+            if self.is_open_marker(element):
                 self._data = []
                 self._multi = True
             elif self._active_state is not None:
                 consume = False
                 self._active_state.parse(line_elements)
-                if self._active_state.isFinished():
-                    self.addData({self._active_key: self._active_state.getData()})
+                if self._active_state.is_finished():
+                    self.add_data({self._active_key: self._active_state.get_data()})
                     self.clear()
                     if not self._multi:
                         self._finished = True
-            elif self.isCloseMarker(element):
+            elif self.is_close_marker(element):
                 self._finished = True
             elif self._active_state is None:
                 if _is_node(element):
                     self._active_key = element
-                    self._active_state = _get_VRML_node(element)
+                    self._active_state = _get_vrml_node(element)
                 elif element == 'NULL':
                     self._data = None
                     self._finished = True
@@ -251,24 +251,24 @@ class _BaseFloat(_BaseMultiAble):
         self._current = []
 
     def parse(self, line_elements):
-        while line_elements and not self.isFinished():
+        while line_elements and not self.is_finished():
             element = line_elements.pop(0)
             if self._data is None:
                 self._data = []
 
-            if self.isOpenMarker(element):
+            if self.is_open_marker(element):
                 self._multi = True
-            elif self.isCloseMarker(element):
+            elif self.is_close_marker(element):
                 self._finished = True
             else:
                 if element[-1] == ',':
                     element = element[:-1]
                 self._current.append(float(element))
                 if len(self._current) == self._float_count:
-                    self.addData(self._current)
+                    self.add_data(self._current)
                     self._current = []
                     if not self._multi:
-                        self.setFinished()
+                        self.set_finished()
 
 
 class _BaseInt(_BaseMultiAble):
@@ -279,22 +279,22 @@ class _BaseInt(_BaseMultiAble):
         super(_BaseInt, self).__init__()
 
     def parse(self, line_elements):
-        while line_elements and not self.isFinished():
+        while line_elements and not self.is_finished():
             element = line_elements.pop(0)
             if self._data is None:
                 self._data = []
 
-            if self.isOpenMarker(element):
+            if self.is_open_marker(element):
                 self._multi = True
-            elif self.isCloseMarker(element):
+            elif self.is_close_marker(element):
                 self._finished = True
             else:
                 if element[-1] == ',':
                     element = element[:-1]
 
-                self.addData(int(element))
+                self.add_data(int(element))
                 if not self._multi:
-                    self.setFinished()
+                    self.set_finished()
 
 
 class _FInt32(_BaseInt):
@@ -343,15 +343,15 @@ class _FString(_BaseMultiAble):
         self._parsing_string = False
 
     def parse(self, line_elements):
-        while line_elements and not self.isFinished():
+        while line_elements and not self.is_finished():
             element = line_elements.pop(0)
-            if self.isOpenMarker(element):
+            if self.is_open_marker(element):
                 #  Multi string
-                self.setMulti()
+                self.set_multi()
                 self._data = []
-            elif self.isCloseMarker(element):
-                self.setMulti(False)
-                self.setFinished()
+            elif self.is_close_marker(element):
+                self.set_multi(False)
+                self.set_finished()
             else:
                 if self._data is None:
                     self._data = ''
@@ -361,7 +361,7 @@ class _FString(_BaseMultiAble):
                     index = element.find("\"", index + 1)
                 if self._parsing_string:
                     inclusive_index = index + 1
-                    if self.isMulti():
+                    if self.is_multi():
                         stem_string = self._data.pop()
                         if index > -1:
                             stem_string += ' ' + element[:inclusive_index]
@@ -375,11 +375,11 @@ class _FString(_BaseMultiAble):
                             self._data += ' ' + element
                     if index > -1:
                         self._parsing_string = False
-                        if not self.isMulti():
-                            self.setFinished()
+                        if not self.is_multi():
+                            self.set_finished()
                 else:
                     self._parsing_string = True
-                    if self.isMulti():
+                    if self.is_multi():
                         self._data.append(element)
                     else:
                         self._data += element
@@ -403,16 +403,16 @@ class _BaseNode(_BaseParse):
         self._active_field = None
         self._field_parser = None
 
-    def getName(self):
+    def get_name(self):
         return self._name
 
-    def isOpenMarker(self, marker):
+    def is_open_marker(self, marker):
         return marker == self._open_marker
 
-    def isCloseMarker(self, marker):
+    def is_close_marker(self, marker):
         return marker == self._close_marker
 
-    def getParser(self, field_name):
+    def get_parser(self, field_name):
         index = self._fields.index(field_name)
         field_type = self._field_types[index]
         if field_type in ['SFString', 'MFString']:
@@ -434,26 +434,26 @@ class _BaseNode(_BaseParse):
 
         return parser
 
-    def addData(self, key, data):
+    def add_data(self, key, data):
         self._data[key] = data
 
     def parse(self, line_elements):
-        while line_elements and not self.isFinished():
+        while line_elements and not self.is_finished():
             element = line_elements[0]
             consume = True
-            if self.isOpenMarker(element):
+            if self.is_open_marker(element):
                 self._data = {}
             elif self._active_field is not None:
                 consume = False
                 self._field_parser.parse(line_elements)
-                if self._field_parser.isFinished():
-                    self.addData(self._active_field, self._field_parser.getData())
+                if self._field_parser.is_finished():
+                    self.add_data(self._active_field, self._field_parser.get_data())
                     self.clear()
-            elif self.isCloseMarker(element):
-                self.setFinished()
+            elif self.is_close_marker(element):
+                self.set_finished()
             else:
                 self._active_field = element
-                self._field_parser = self.getParser(element)
+                self._field_parser = self.get_parser(element)
 
             if consume:
                 line_elements.pop(0)
@@ -549,7 +549,7 @@ class _NormalNode(_BaseNode):
         self._field_types = ['MFVec3f']
 
 
-def _checkHeader(header):
+def _check_header(header):
     vrml, version, encoding = header.strip().split(' ')
     # VRML V2.0 utf8
     if vrml == '#VRML' and version == 'V2.0' and encoding == 'utf8':
@@ -558,7 +558,7 @@ def _checkHeader(header):
     return False
 
 
-def _convertToElementList(elements_list):
+def _convert_to_element_list(elements_list):
     """
     Take a list of element node indexes deliminated by -1 and convert
     it into a list element node indexes list.
@@ -580,7 +580,7 @@ def _get_known_nodes():
     Return a list of known node names.  Taken from the subclasses of _BaseNode.
     :return: List of known node names.
     """
-    return [n().getName() for n in _BaseNode.__subclasses__()]
+    return [n().get_name() for n in _BaseNode.__subclasses__()]
 
 
 def _is_node(name):
@@ -596,7 +596,7 @@ def _is_node(name):
     return False
 
 
-def _get_VRML_node(name):
+def _get_vrml_node(name):
     """
     Return the node object that matches the given named node.  The name must be a valid VRML node name.
     :param name: The name of the object to return.

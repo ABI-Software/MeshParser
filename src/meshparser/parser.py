@@ -15,26 +15,26 @@ class MeshParser(object):
             stl_parser = STLParser()
             vrml_parser = VRMLParser()
             if filename.endswith('.vtk'):
-                if vtk_parser.canParse(filename):
+                if vtk_parser.can_parse(filename):
                     self._parser = vtk_parser
                 else:
                     raise TypeError('Could not parse mesh as vtk mesh: {0}'.format(filename))
             elif filename.endswith('.stl'):
-                if stl_parser.canParse(filename):
+                if stl_parser.can_parse(filename):
                     self._parser = stl_parser
                 else:
                     raise TypeError('Could not parse mesh as stl mesh: {0}'.format(filename))
             elif filename.endswith('.wrl'):
-                if vrml_parser.canParse(filename):
+                if vrml_parser.can_parse(filename):
                     self._parser = vrml_parser
                 else:
                     raise TypeError('Could not parse mesh as vrml mesh: {0}'.format(filename))
             else:
-                if vtk_parser.canParse(filename):
+                if vtk_parser.can_parse(filename):
                     self._parser = vtk_parser
-                elif stl_parser.canParse(filename):
+                elif stl_parser.can_parse(filename):
                     self._parser = stl_parser
-                elif vrml_parser.canParse(filename):
+                elif vrml_parser.can_parse(filename):
                     self._parser = vrml_parser
                 else:
                     raise TypeError('Could not determine type of mesh to parse for filename: {0}'.format(filename))
@@ -51,8 +51,8 @@ class MeshParser(object):
 
         self._parser.parse(filename)
 
-    def getPoints(self, pared=False):
-        return self._parser.getPoints(pared=pared)
+    def get_points(self, pared=False):
+        return self._parser.get_points(pared=pared)
 
-    def getElements(self, zero_based=True, pared=False):
-        return self._parser.getElements(zero_based=zero_based, pared=pared)
+    def get_elements(self, zero_based=True, pared=False):
+        return self._parser.get_elements(zero_based=zero_based, pared=pared)

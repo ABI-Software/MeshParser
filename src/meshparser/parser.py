@@ -56,3 +56,10 @@ class MeshParser(object):
 
     def get_elements(self, zero_based=True, pared=False):
         return self._parser.get_elements(zero_based=zero_based, pared=pared)
+
+
+def parse_mesh(filename, use_parser=None, pared=True, zero_based=True):
+    p = MeshParser()
+    p.parse(filename, use_parser)
+
+    return {'points': p.get_points(pared=pared), 'elements': p.get_elements(zero_based=zero_based, pared=pared)}

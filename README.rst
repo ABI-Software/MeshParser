@@ -1,5 +1,5 @@
 
-.. |build_badge| image:: https://travis-ci.org/ABI-Software/MeshParser.svg?branch=master
+.. |build_badge| image:: https://travis-ci.org/ABI-Software/MeshParser.svg?branch=main
     :target: https://travis-ci.org/ABI-Software/MeshParser
 
 =========================
@@ -22,7 +22,7 @@ Install
 
 ::
 
-  pip install git+https://github.com/ABI-Software/MeshParser.git
+  pip install MeshParser
 
 Usage
 =====
@@ -35,7 +35,21 @@ Usage
   # using a second argument 'use_parser'.  The 'use_parser' parameter must have one of the values from {'vtk', 'stl', 'vrml'}.
   p = MeshParser()
   p.parse('file/to/parse')
-  # getPoints has an option to get the pared down points, i.e. all repeated points will be removed.
-  n = p.getPoints()
-  # getElements has two options, zero_based: returns point indexes that are zero based [false], pared: remove repeated points [false]
-  e = p.getElements()
+  # get_points has an option to get the pared down points, i.e. all repeated points will be removed.
+  n = p.get_points()
+  # get_elements has two options, zero_based: returns point indexes that are zero based [false], pared: remove repeated points [false]
+  e = p.get_elements()
+
+Advanced usage::
+
+  from meshparser.parser import parse_mesh
+  from meshparser.manipulation import calculate_centre_of_mass, translate, rotate
+  from meshparser.printer import print_mesh
+
+  mesh = parse_mesh('<absolute-path-to-in.stl>')
+  com = calculate_centre_of_mass(mesh)
+  mcom = [-val for val in com]
+  mesh = translate(mesh, mcom)
+  mesh = rotate(mesh, [1, 0, 0], 90)
+
+  print_mesh(mesh, '<absolute-path-to-out.stl>')
